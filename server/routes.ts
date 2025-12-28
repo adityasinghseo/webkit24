@@ -10,7 +10,7 @@ import fs from 'fs';
 // Initialize OpenAI client for OpenRouter
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY || "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",
+  apiKey: process.env.OPENROUTER_API_KEY || "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",
   defaultHeaders: {
     "HTTP-Referer": "https://stackblitz.com",
     "X-Title": "SaaS Website",
@@ -45,7 +45,9 @@ async function generateWithFallback(prompt: string, retries = 0): Promise<string
     return content;
 
   } catch (err: any) {
-    console.error(`Model ${model} failed:`, err.message);
+    const msg = `Model ${model} failed: ${err.message}`;
+    console.error(msg);
+    fs.appendFileSync('error.log', `${new Date().toISOString()} - ${msg}\n`);
     // Recursively try the next model
     return generateWithFallback(prompt, retries + 1);
   }
@@ -79,25 +81,32 @@ export async function registerRoutes(
     try {
       const input = generatePlanSchema.parse(req.body);
 
+      const budgetLevel = input.budget === "scale" || input.budget === "enterprise" ? "High" : "Low";
       const prompt = `
-        Act as a digital growth strategist. Create a 360° growth plan for a ${input.businessCategory} business.
+        Act as a Senior Digital Strategist for Webkit24 (a premium digital agency). 
+        Create a 360° growth plan for a ${input.businessCategory} business.
         City: ${input.city || "Not specified"}
-        Budget: ${input.budget || "Not specified"}
+        Budget Level: ${budgetLevel} (${input.budget})
         Goal: ${input.goal}
         
         Context:
         - Current Website Status: ${input.websiteStatus || "Unknown"}
         - Target Audience: ${input.targetAudience || "General Public"}
-        - Key Competitors: ${input.competitors || "None listed"}
         - Unique Selling Point (USP): ${input.usp || "None listed"}
 
-        Return ONLY a raw JSON object (no markdown formatting) with these keys:
-        - marketingChannels (array of strings)
-        - websiteNeeds (array of strings)
-        - automations (array of strings)
-        - timeline (string)
+        Your Strategy Logic:
+        1. If Budget is LOW: Focus on "Essential Foundation", "Local SEO", "Content Marketing", and "Social Media Presence".
+        2. If Budget is HIGH: Focus on "Custom Software/App Development", "Advanced AI Automation", "Paid Ad Scaling", and "CRM Integration".
+        3. ALWAYS frame suggestions as "Professional Strategies" that require expert execution (e.g., "Implement Advanced Schema" instead of just "Fix SEO").
 
-        Keep it concise and punchy.
+        Return ONLY a raw JSON object (no markdown formatting) with these keys:
+        - marketingChannels (array of strings, specific to budget)
+        - websiteNeeds (array of strings, e.g., "Custom React Development", "Landing Page Optimization")
+        - automations (array of strings, e.g., "AI Chatbot", "Email Sequences")
+        - timeline (string, e.g. "4-6 Weeks for MVP")
+        - whyHireWebkit24 (string, 1 punchy sentence why they need professional help for this specific plan)
+
+        Keep it concise, professional, and punchy.
       `;
 
       let text = await generateWithFallback(prompt);

@@ -5,17 +5,85 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGeneratePlan } from "@/hooks/use-ai";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generatePlanSchema, type GeneratePlanRequest, type AIPlanResponse } from "@shared/schema";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, CheckCircle2, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowRight, Check, ChevronsUpDown } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+
+// --- SMART PRESETS ---
+const PRESET_DATA: Record<string, {
+  audience: string;
+  goal: string;
+  website: string;
+  usps: string[];
+}> = {
+  "Doctor / Clinic": {
+    audience: "Patients, Local Residents",
+    goal: "leads",
+    website: "No Website",
+    usps: ["Experienced Doctors", "Emergency Support", "Affordable Consultation", "Modern Equipment"]
+  },
+  "Dental Clinic": {
+    audience: "Local Families, Patients needing cosmetic work",
+    goal: "leads",
+    website: "No Website",
+    usps: ["Pain-Free Treatment", "Cosmetic Experts", "Weekend Open", "Insurance Accepted"]
+  },
+  "Real Estate Agent": {
+    audience: "Home Buyers, Property Investors",
+    goal: "leads",
+    website: "Needs Redesign",
+    usps: ["Top 1% Agent", "Local Market Expert", "Free Valuation", "Quick Sales"]
+  },
+  "SaaS / Startup": {
+    audience: "B2B Founders, Product Teams",
+    goal: "sales",
+    website: "High Performing",
+    usps: ["AI-Powered", "Scalable", "Enterprise Security", "24/7 Support"]
+  },
+  "E-commerce Brand": {
+    audience: "Online Shoppers, Gen Z",
+    goal: "sales",
+    website: "Good Condition",
+    usps: ["Free Shipping", "Premium Quality", "Sustainable", "Handmade"]
+  },
+  "Restaurant / Cafe": {
+    audience: "Local Foodies, Couples, Families",
+    goal: "branding",
+    website: "No Website",
+    usps: ["Best Ambiance", "Authentic Taste", "Live Music", "Pet Friendly"]
+  },
+  "Gym / Fitness": {
+    audience: "Fitness Enthusiasts, Beginners",
+    goal: "leads",
+    website: "Needs Redesign",
+    usps: ["Certified Trainers", "24/7 Access", "Modern Equipment", "Free Trial"]
+  }
+};
+
+const CATEGORIES = Object.keys(PRESET_DATA);
 
 export default function GrowthGenerator() {
   const mutation = useGeneratePlan();
   const [result, setResult] = useState<AIPlanResponse | null>(null);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<GeneratePlanRequest>({
     resolver: zodResolver(generatePlanSchema),
@@ -30,6 +98,27 @@ export default function GrowthGenerator() {
       usp: "",
     },
   });
+
+  // Dynamic chips based on selection
+  const currentCategory = form.watch("businessCategory");
+  const defaultChips = ["Best Price", "24/7 Support", "AI-Powered", "Eco-Friendly", "Premium Quality"];
+  const activeUsps = PRESET_DATA[currentCategory]?.usps || defaultChips;
+
+  function onCategorySelect(category: string) {
+    form.setValue("businessCategory", category);
+    setOpen(false);
+
+    // --- AUTO-FILL ENGINE ---
+    const preset = PRESET_DATA[category];
+    if (preset) {
+      // Only auto-fill if the field is empty to respect user edits
+      if (!form.getValues("targetAudience")) form.setValue("targetAudience", preset.audience);
+      if (!form.getValues("websiteStatus")) form.setValue("websiteStatus", preset.website);
+
+      // Goal is a dropdown, so we can just set it
+      form.setValue("goal", preset.goal);
+    }
+  }
 
   function onSubmit(data: GeneratePlanRequest) {
     setResult(null);
@@ -61,15 +150,61 @@ export default function GrowthGenerator() {
           >
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
+                {/* SMART COMBOBOX */}
                 <FormField
                   control={form.control}
                   name="businessCategory"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>Business Category</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. Dental Clinic, SaaS, E-commerce..." className="bg-white/5 border-white/10" {...field} />
-                      </FormControl>
+                      <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                "w-full justify-between bg-white/5 border-white/10 text-left font-normal hover:bg-white/10 hover:text-white",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value
+                                ? CATEGORIES.find((c) => c === field.value) || field.value
+                                : "Select or type category..."}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-zinc-900 border-white/10 text-white">
+                          <Command className="bg-transparent">
+                            <CommandInput placeholder="Search category (e.g. Doctor, SaaS)..." className="text-white" />
+                            <CommandList>
+                              <CommandEmpty>No category found. You can type anything.</CommandEmpty>
+                              <CommandGroup>
+                                {CATEGORIES.map((category) => (
+                                  <CommandItem
+                                    value={category}
+                                    key={category}
+                                    onSelect={() => onCategorySelect(category)}
+                                    className="data-[selected=true]:bg-white/10 data-[selected=true]:text-white cursor-pointer"
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        category === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                    {category}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -96,7 +231,7 @@ export default function GrowthGenerator() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Current Website Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger className="bg-white/5 border-white/10">
                               <SelectValue placeholder="Select status" />
@@ -148,34 +283,22 @@ export default function GrowthGenerator() {
                       <FormControl>
                         <Input placeholder="Who are your ideal customers?" className="bg-white/5 border-white/10" {...field} value={field.value || ''} />
                       </FormControl>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {["B2B Founders", "Homeowners", "Gen Z Gamers", "Local Shoppers", "Students"].map(chip => (
-                          <div key={chip}
-                            className="text-xs bg-white/5 px-2 py-1 rounded-full cursor-pointer hover:bg-white/10 transition-colors text-gray-400"
-                            onClick={() => form.setValue("targetAudience", chip)}
-                          >
-                            {chip}
-                          </div>
-                        ))}
-                      </div>
+                      {/* Chips are helpful but optional since we have auto-fill now */}
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="competitors"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Key Competitors (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="List top 1-2 competitors" className="bg-white/5 border-white/10" {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* HIDDEN COMPETITORS FIELD (still in schema but hidden from UI as requested) */}
+                <div className="hidden">
+                  <FormField
+                    control={form.control}
+                    name="competitors"
+                    render={({ field }) => (
+                      <Input {...field} value={field.value || ''} />
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
@@ -187,7 +310,7 @@ export default function GrowthGenerator() {
                         <Input placeholder="What makes you different?" className="bg-white/5 border-white/10" {...field} value={field.value || ''} />
                       </FormControl>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {["Best Price", "24/7 Support", "AI-Powered", "Eco-Friendly", "Premium Quality"].map(chip => (
+                        {activeUsps.map(chip => (
                           <div key={chip}
                             className="text-xs bg-white/5 px-2 py-1 rounded-full cursor-pointer hover:bg-white/10 transition-colors text-gray-400"
                             onClick={() => form.setValue("usp", chip)}
@@ -207,7 +330,7 @@ export default function GrowthGenerator() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Primary Goal</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="bg-white/5 border-white/10">
                             <SelectValue placeholder="Choose goal" />
@@ -279,10 +402,24 @@ export default function GrowthGenerator() {
                   <div className="mb-6 pb-6 border-b border-white/10 flex justify-between items-start">
                     <div>
                       <h2 className="text-2xl font-bold font-display">Your Growth Blueprint</h2>
-                      <p className="text-gray-400 text-sm">Estimated Timeline: <span className="text-white">{result.timeline}</span></p>
+                      <p className="text-gray-400 text-sm mt-1">
+                        Strategy by <span className="text-white font-semibold">Webkit24 AI</span> • Timeline: <span className="text-white">{result.timeline}</span>
+                      </p>
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => window.print()}>Export PDF</Button>
+                    {/* Disclaimer Badge */}
+                    <div className="bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                      <p className="text-xs text-gray-400">AI Generated Insight</p>
+                    </div>
                   </div>
+
+                  {/* "Why Hire" Insight from AI */}
+                  {result.whyHireWebkit24 && (
+                    <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 p-4 rounded-lg border border-blue-500/20 mb-6">
+                      <p className="text-blue-200 text-sm font-medium flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-pulse" /> Expert Insight: {result.whyHireWebkit24}
+                      </p>
+                    </div>
+                  )}
 
                   <div className="space-y-6">
                     <ResultSection title="Marketing Channels" items={result.marketingChannels} />
@@ -290,10 +427,19 @@ export default function GrowthGenerator() {
                     <ResultSection title="Automation Stack" items={result.automations} />
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-white/10">
-                    <Button className="w-full" variant="premium" onClick={() => window.location.href = '/#contact'}>
-                      Build This System For Me <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
+                  <div className="mt-8 pt-6 border-t border-white/10 space-y-4">
+                    <p className="text-center text-gray-400 text-sm mb-4">
+                      Ready to execute this plan? Don't do it alone.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Button className="w-full bg-white text-black hover:bg-gray-200" onClick={() => window.open('https://calendly.com/', '_blank')}>
+                        Book Free Strategy Call
+                      </Button>
+                      <Button className="w-full" variant="outline" onClick={() => window.open('https://wa.me/1234567890', '_blank')}>
+                        Chat on WhatsApp
+                      </Button>
+                    </div>
                   </div>
                 </motion.div>
               )}

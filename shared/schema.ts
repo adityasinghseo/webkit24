@@ -65,12 +65,13 @@ export const generateIdeaSchema = z.object({
 export type GenerateIdeaRequest = z.infer<typeof generateIdeaSchema>;
 
 // Response type for AI generators
-export interface AIPlanResponse {
+export type AIPlanResponse = {
   marketingChannels: string[];
   websiteNeeds: string[];
   automations: string[];
   timeline: string;
-}
+  whyHireWebkit24?: string;
+};
 
 export interface AIIdeaResponse {
   websiteFeatures: string[];
