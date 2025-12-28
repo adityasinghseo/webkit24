@@ -13,6 +13,7 @@ import { ArrowRight, BarChart3, Bot, Globe, Layers, Zap } from "lucide-react";
 export default function Home() {
   const [isSystem, setIsSystem] = useState(true);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [exploredLayers, setExploredLayers] = useState<Set<string>>(new Set(["Growth Website"])); // Start with 1 explored
 
   const toggleCard = (title: string) => {
     setExpandedCard(prev => prev === title ? null : title);
@@ -21,6 +22,7 @@ export default function Home() {
   const handleMouseEnter = (title: string) => {
     if (window.matchMedia("(hover: hover)").matches) {
       setExpandedCard(title);
+      setExploredLayers(prev => new Set(prev).add(title));
     }
   };
 
@@ -111,9 +113,14 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div>
               <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">The Webkit24 OS</h2>
-              <p className="text-gray-400 text-lg max-w-xl">
-                Hover over a system to see how it works. We engineer predictability into your business.
-              </p>
+              <div className="flex items-center gap-4">
+                <p className="text-gray-400 text-lg max-w-xl">
+                  Hover over a system to see how it works.
+                </p>
+                <div className="hidden md:flex px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-blue-400 tracking-wider">
+                  System Assembly Progress: {exploredLayers.size} of 5 layers active
+                </div>
+              </div>
             </div>
           </div>
 
@@ -133,8 +140,10 @@ export default function Home() {
                 "Brand looks outdated and untrustworthy",
                 "Marketing budget yields zero ROI"
               ]}
-              ctaText="Build Growth Foundation"
+              ctaText="Install Conversion Foundation"
               isExpanded={expandedCard === "Growth Website"}
+              isDimmed={expandedCard !== null && expandedCard !== "Growth Website"}
+              systemTier="FOUNDATION"
               onToggle={() => toggleCard("Growth Website")}
               onMouseEnter={() => handleMouseEnter("Growth Website")}
               onMouseLeave={handleMouseLeave}
@@ -154,8 +163,10 @@ export default function Home() {
                 "Manual data entry eats your time",
                 "No organized pipeline for sales"
               ]}
-              ctaText="Automate My Leads"
+              ctaText="Enable Lead Engine"
               isExpanded={expandedCard === "Lead Automation"}
+              isDimmed={expandedCard !== null && expandedCard !== "Lead Automation"}
+              systemTier="AUTOMATION"
               onToggle={() => toggleCard("Lead Automation")}
               onMouseEnter={() => handleMouseEnter("Lead Automation")}
               onMouseLeave={handleMouseLeave}
@@ -175,8 +186,10 @@ export default function Home() {
                 "Winning ads get buried",
                 "Manual optimization slows growth"
               ]}
-              ctaText="Enable Scaling Engine"
+              ctaText="Activate Scaling Engine"
               isExpanded={expandedCard === "Scale System"}
+              isDimmed={expandedCard !== null && expandedCard !== "Scale System"}
+              systemTier="OPTIMIZATION"
               onToggle={() => toggleCard("Scale System")}
               onMouseEnter={() => handleMouseEnter("Scale System")}
               onMouseLeave={handleMouseLeave}
@@ -196,8 +209,10 @@ export default function Home() {
                 "Rising acquisition costs kill margins",
                 "No lifetime value growth"
               ]}
-              ctaText="Activate Retention Loop"
+              ctaText="Turn On Revenue Loop"
               isExpanded={expandedCard === "Retention Loops"}
+              isDimmed={expandedCard !== null && expandedCard !== "Retention Loops"}
+              systemTier="COMPOUNDING"
               onToggle={() => toggleCard("Retention Loops")}
               onMouseEnter={() => handleMouseEnter("Retention Loops")}
               onMouseLeave={handleMouseLeave}
@@ -217,8 +232,10 @@ export default function Home() {
                 "Months wasted on unvalidated builds",
                 "No feedback until it’s too late"
               ]}
-              ctaText="Launch My MVP"
+              ctaText="Launch Experiment Engine"
               isExpanded={expandedCard === "Rapid MVP"}
+              isDimmed={expandedCard !== null && expandedCard !== "Rapid MVP"}
+              systemTier="EXPANSION"
               onToggle={() => toggleCard("Rapid MVP")}
               onMouseEnter={() => handleMouseEnter("Rapid MVP")}
               onMouseLeave={handleMouseLeave}
@@ -230,7 +247,7 @@ export default function Home() {
                 <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-2">Architect Yours</h3>
+                <h3 className="text-2xl font-bold mb-2">Assemble My Growth OS</h3>
                 <p className="text-gray-400 text-sm group-hover:text-white transition-colors">Start the Planner &rarr;</p>
               </Link>
             </div>
