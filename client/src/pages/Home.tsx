@@ -4,7 +4,8 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { GrowthSimulator } from "@/components/home/GrowthSimulator";
 import { InteractiveSystemCard } from "@/components/home/InteractiveSystemCard";
-import { DecisionSection } from "@/components/home/DecisionSection";
+import { SystemFlow } from "@/components/home/SystemFlow";
+import { BuilderSection } from "@/components/home/BuilderSection";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
@@ -255,8 +256,54 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Decision Section (Replaces Contact Form) */}
-      <DecisionSection />
+      {/* How It Works - System Flow */}
+      <section className="py-24 bg-black border-t border-white/5 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">From Traffic to Revenue — Automatically</h2>
+            <p className="text-gray-400 text-lg uppercase tracking-widest font-mono text-sm">
+              A self-regulating growth engine that replaces manual work with connected systems.
+            </p>
+          </div>
+
+          <SystemFlow />
+
+          <div className="mt-20 text-center border-t border-white/10 pt-16">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4">
+              This Isn’t a Template. It’s Built for Your Business.
+            </h3>
+            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+              Your industry, budget, and goals determine how the Growth OS is architected.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+              <Link href="/generator">
+                <Button variant="premium" size="lg" className="h-14 px-8 text-lg w-full sm:w-auto">
+                  <Zap className="w-5 h-5 mr-2" />
+                  Build My Growth OS
+                </Button>
+              </Link>
+              <Link href="/ideas">
+                <Button variant="outline" size="lg" className="h-14 px-8 text-lg w-full sm:w-auto border-white/10 hover:bg-white/5">
+                  Diagnose My Current System
+                </Button>
+              </Link>
+            </div>
+            <div className="space-y-4">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Free strategy consultation • No sales pressure</p>
+              <p className="text-xs text-gray-600 font-mono">
+                Webkit24 doesn’t run campaigns.
+                <br />
+                We engineer growth systems.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Builder Section (Replaces Contact/Decision) */}
+      <BuilderSection />
 
       <Footer />
     </div>
