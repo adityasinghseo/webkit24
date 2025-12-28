@@ -1,0 +1,284 @@
+Design a premium black & white SaaS-style website for Webkit24, a next-gen digital marketing and AI-powered software company.
+
+Webkit24 is NOT a typical agency.
+It offers:
+
+Digital Marketing
+
+AI Automation
+
+Marketing AI Tools
+
+Website, Software & App Development
+
+Business Growth Systems
+
+The website must feel like:
+
+A platform, not an agency brochure
+
+🎨 Design Language & Visual Style
+Color Theme
+
+Primary: Deep Black + White
+
+Accent: Soft Grey / Charcoal
+
+Optional micro-accent: very subtle neon (blue or orange) ONLY on hover/interactions
+
+Look & Feel
+
+Premium
+
+Minimal
+
+SaaS / Product-based
+
+Apple + Stripe + Notion inspired
+
+Heavy use of:
+
+White space
+
+Grid layouts
+
+Smooth micro-animations
+
+Interactive sections
+
+🚫 No stock “agency” layouts
+🚫 No clutter
+🚫 No marketing buzzword overload
+
+🧠 CORE DIFFERENTIATOR (MOST IMPORTANT)
+
+The website must ENGAGE visitors and GIVE VALUE before selling.
+
+Instead of “About Us / Services / Contact” only, the homepage should feel like an interactive growth playground.
+
+🚀 HOMEPAGE HERO SECTION (OUT-OF-THE-BOX)
+Hero Section Goal
+
+Immediately make visitors think:
+
+“This company thinks differently. Let me explore.”
+
+Hero Layout
+
+Split hero section into 3 interactive paths:
+
+🔹 Hero Headline
+
+Bold, minimal, confident
+
+Example direction (not exact text):
+
+We don’t market brands.
+We build growth systems.
+
+Subtext:
+
+AI, automation, marketing & software — designed for modern businesses.
+
+🔹 Hero Interactive Blocks (VERY IMPORTANT)
+1️⃣ 360° Digital Growth Plan Generator
+
+Interactive card / button:
+
+“Build Your 360° Digital Growth Plan”
+
+On click:
+
+Ask 3–5 quick questions:
+
+Business category
+
+City / country
+
+Budget range
+
+Goal (leads, sales, branding, automation)
+
+Instantly show:
+
+Suggested marketing channels
+
+Website/app needs
+
+AI automations
+
+Estimated timeline
+
+CTA:
+👉 Get this plan on WhatsApp / Book a call
+
+💡 This makes Webkit24 look like a platform, not an agency.
+
+2️⃣ Business Category-Wise Strategy Explorer
+
+Interactive dropdown or slider:
+
+“Select Your Business Type”
+
+Options:
+
+Doctor / Hospital
+
+Real Estate
+
+Ecommerce
+
+Startup
+
+Local Business
+
+SaaS
+
+Manufacturing
+
+Education
+
+On selection:
+
+Show:
+
+Website structure suggestion
+
+Social media strategy
+
+Paid ads idea
+
+AI automation ideas
+
+Tools stack
+
+CTA:
+👉 Want this implemented? Talk to us.
+
+3️⃣ Website / App Idea Generator
+
+Creative SaaS-style feature:
+
+“Get Website or App Ideas for Your Business”
+
+User enters:
+
+Business type
+
+Problem they face
+
+Show:
+
+Website features
+
+App idea (if applicable)
+
+Automation workflows
+
+CRM / AI usage
+
+Monetization ideas
+
+This alone will destroy typical agency websites.
+
+🧩 WHAT ELSE SHOULD BE DIFFERENT (YOUR EDGE)
+🔥 “We Don’t Sell Services” Section
+
+Instead of service cards:
+
+Show systems:
+
+Growth System
+
+Lead System
+
+Automation System
+
+Retention System
+
+Scale System
+
+Each system expands on click.
+
+🤖 AI & Automation Section (NOT BORING)
+
+Show:
+
+AI chat automation
+
+WhatsApp CRM
+
+Lead scoring
+
+Auto follow-ups
+
+AI content workflows
+
+Marketing dashboards
+
+Use:
+
+Animated flow diagrams
+
+Minimal motion
+
+Black & white lines
+
+📊 Real Business Scenarios (NOT TESTIMONIALS)
+
+Show:
+
+“If you are a clinic → this is how we grow you”
+
+“If you are a startup → this is your roadmap”
+
+“If you are an ecommerce brand → this is your funnel”
+
+This builds trust without fake numbers.
+
+📞 CONTACT WITHOUT “CONTACT PAGE”
+
+Sticky CTA:
+
+“Talk to a Growth Expert”
+
+WhatsApp
+
+Instant call booking
+
+Mini form embedded in page
+
+No boring contact page dependency
+
+🧠 UX & MICRO INTERACTIONS
+
+Smooth scroll
+
+Hover reveals
+
+Card expand animations
+
+Cursor interaction (optional)
+
+Clean transitions
+
+No heavy animations
+
+🛠 TECH STACK SUGGESTION (OPTIONAL)
+
+Frontend: React / Next.js / Framer
+
+Animations: Framer Motion
+
+Forms: AI logic / conditional flows
+
+Dark mode by default
+
+Mobile-first UX
+
+🏁 FINAL FEEL
+
+The visitor should feel:
+
+“This is not an agency website.
+This is a growth platform.”
