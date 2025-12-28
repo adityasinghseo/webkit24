@@ -1,0 +1,2 @@
+﻿Testing model: gemini-1.5-flash with key ending in: ...goz4
+Testing model: gemini-pro with key ending in: ...goz4

@@ -24,6 +24,10 @@ export default function GrowthGenerator() {
       city: "",
       budget: "",
       goal: "leads",
+      websiteStatus: "",
+      targetAudience: "",
+      competitors: "",
+      usp: "",
     },
   });
 
@@ -39,7 +43,7 @@ export default function GrowthGenerator() {
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
-      
+
       <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">360° Growth Plan Generator</h1>
@@ -50,7 +54,7 @@ export default function GrowthGenerator() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Form */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="glass-card p-8 rounded-2xl"
@@ -88,6 +92,30 @@ export default function GrowthGenerator() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
+                    name="websiteStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Current Website Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-white/5 border-white/10">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="No Website">No Website</SelectItem>
+                            <SelectItem value="Needs Redesign">Needs Redesign</SelectItem>
+                            <SelectItem value="Good Condition">Good Condition</SelectItem>
+                            <SelectItem value="High Performing">High Performing</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="budget"
                     render={({ field }) => (
                       <FormItem>
@@ -109,31 +137,93 @@ export default function GrowthGenerator() {
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={form.control}
-                    name="goal"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Primary Goal</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="bg-white/5 border-white/10">
-                              <SelectValue placeholder="Choose goal" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="leads">More Leads</SelectItem>
-                            <SelectItem value="sales">More Sales</SelectItem>
-                            <SelectItem value="branding">Brand Awareness</SelectItem>
-                            <SelectItem value="retention">Customer Retention</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="targetAudience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Target Audience</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Who are your ideal customers?" className="bg-white/5 border-white/10" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {["B2B Founders", "Homeowners", "Gen Z Gamers", "Local Shoppers", "Students"].map(chip => (
+                          <div key={chip}
+                            className="text-xs bg-white/5 px-2 py-1 rounded-full cursor-pointer hover:bg-white/10 transition-colors text-gray-400"
+                            onClick={() => form.setValue("targetAudience", chip)}
+                          >
+                            {chip}
+                          </div>
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="competitors"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Key Competitors (Optional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="List top 1-2 competitors" className="bg-white/5 border-white/10" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="usp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Unique Selling Point (USP)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="What makes you different?" className="bg-white/5 border-white/10" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {["Best Price", "24/7 Support", "AI-Powered", "Eco-Friendly", "Premium Quality"].map(chip => (
+                          <div key={chip}
+                            className="text-xs bg-white/5 px-2 py-1 rounded-full cursor-pointer hover:bg-white/10 transition-colors text-gray-400"
+                            onClick={() => form.setValue("usp", chip)}
+                          >
+                            {chip}
+                          </div>
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="goal"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Primary Goal</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="bg-white/5 border-white/10">
+                            <SelectValue placeholder="Choose goal" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="leads">More Leads</SelectItem>
+                          <SelectItem value="sales">More Sales</SelectItem>
+                          <SelectItem value="branding">Brand Awareness</SelectItem>
+                          <SelectItem value="retention">Customer Retention</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <Button type="submit" className="w-full" variant="premium" disabled={mutation.isPending}>
                   {mutation.isPending ? (
@@ -152,7 +242,7 @@ export default function GrowthGenerator() {
           <div className="relative min-h-[400px]">
             <AnimatePresence mode="wait">
               {!result && !mutation.isPending && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -181,7 +271,7 @@ export default function GrowthGenerator() {
               )}
 
               {result && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="glass-card p-8 rounded-2xl border-white/20 shadow-2xl"
@@ -211,7 +301,7 @@ export default function GrowthGenerator() {
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );

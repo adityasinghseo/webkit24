@@ -27,6 +27,10 @@ export const growthPlans = pgTable("growth_plans", {
   city: text("city"),
   budget: text("budget"),
   goal: text("goal"), // 'leads', 'sales', 'branding'
+  websiteStatus: text("website_status"),
+  targetAudience: text("target_audience"),
+  competitors: text("competitors"),
+  usp: text("usp"),
   generatedPlan: jsonb("generated_plan").notNull(), // JSON blob of the AI response
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -46,6 +50,10 @@ export const generatePlanSchema = z.object({
   city: z.string().optional(),
   budget: z.string().optional(),
   goal: z.string(),
+  websiteStatus: z.string().optional(),
+  targetAudience: z.string().optional(),
+  competitors: z.string().optional(),
+  usp: z.string().optional(),
 });
 export type GeneratePlanRequest = z.infer<typeof generatePlanSchema>;
 
