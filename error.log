@@ -5,3 +5,10 @@
 Timestamp: 2025-12-28T21:26:55.093Z
 Error: {"stack":"Error: All models failed to generate content.\n    at generateWithFallback (C:\\Users\\MACHINE\\Downloads\\SaaS-Website\\SaaS-Website\\server\\routes.ts:32:11)\n    at generateWithFallback (C:\\Users\\MACHINE\\Downloads\\SaaS-Website\\SaaS-Website\\server\\routes.ts:52:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (C:\\Users\\MACHINE\\Downloads\\SaaS-Website\\SaaS-Website\\server\\routes.ts:112:18)","message":"All models failed to generate content."}
 
+2025-12-28T21:29:16.082Z - Model google/gemini-2.0-flash-exp:free failed: 401 User not found.
+2025-12-28T21:29:16.206Z - Model deepseek/deepseek-r1:free failed: 401 User not found.
+2025-12-28T21:29:16.536Z - Model deepseek/deepseek-chat:free failed: 401 User not found.
+2025-12-28T21:29:16.600Z - Model meta-llama/llama-3.2-11b-vision-instruct:free failed: 401 User not found.
+Timestamp: 2025-12-28T21:29:16.601Z
+Error: {"stack":"Error: All models failed to generate content.\n    at generateWithFallback (C:\\Users\\MACHINE\\Downloads\\SaaS-Website\\SaaS-Website\\server\\routes.ts:32:11)\n    at generateWithFallback (C:\\Users\\MACHINE\\Downloads\\SaaS-Website\\SaaS-Website\\server\\routes.ts:52:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (C:\\Users\\MACHINE\\Downloads\\SaaS-Website\\SaaS-Website\\server\\routes.ts:112:18)","message":"All models failed to generate content."}
+

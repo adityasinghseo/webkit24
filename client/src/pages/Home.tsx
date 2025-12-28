@@ -1,191 +1,248 @@
+
+import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { ContactForm } from "@/components/ContactForm";
+import { GrowthSimulator } from "@/components/home/GrowthSimulator";
+import { InteractiveSystemCard } from "@/components/home/InteractiveSystemCard";
+import { DecisionSection } from "@/components/home/DecisionSection";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowRight, BarChart3, Bot, Globe, Layers, Zap } from "lucide-react";
 
 export default function Home() {
+  const [isSystem, setIsSystem] = useState(true);
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+
+  const toggleCard = (title: string) => {
+    setExpandedCard(prev => prev === title ? null : title);
+  };
+
+  const handleMouseEnter = (title: string) => {
+    if (window.matchMedia("(hover: hover)").matches) {
+      setExpandedCard(title);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (window.matchMedia("(hover: hover)").matches) {
+      setExpandedCard(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
-      <Navbar />
-      
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-40 pointer-events-none" />
-        
-        <div className="max-w-7xl mx-auto relative z-10 text-center">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tighter mb-8 text-gradient"
-          >
-            We don’t market brands.<br />
-            We build <span className="text-white">growth systems.</span>
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-12 font-light"
-          >
-            AI, automation, marketing & software — designed specifically for modern businesses ready to scale.
-          </motion.p>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex flex-col md:flex-row gap-4 justify-center items-center"
-          >
-            <Link href="/generator">
-              <Button variant="premium" size="lg" className="h-14 px-8 text-lg w-full md:w-auto">
-                <Zap className="w-5 h-5 mr-2" />
-                Build Digital Growth Plan
-              </Button>
-            </Link>
-            <Link href="/ideas">
-              <Button variant="glass" size="lg" className="h-14 px-8 text-lg w-full md:w-auto">
-                <Bot className="w-5 h-5 mr-2" />
-                AI Idea Generator
-              </Button>
-            </Link>
-          </motion.div>
+      <Navbar systemState={isSystem ? "automated" : "manual"} />
+
+      {/* Interactive Hero Section */}
+      <section className="relative pt-24 pb-12 md:pt-32 md:pb-20 px-6 overflow-hidden min-h-[90vh] flex items-center">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent opacity-40 pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto w-full relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+            {/* LEFT COLUMN: Text & Hook */}
+            <div className="text-center lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-block mb-4 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-gray-400"
+              >
+                Most businesses don’t have a growth problem. They have a system problem.
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="text-5xl md:text-6xl lg:text-7xl font-bold font-display tracking-tighter mb-6 text-white leading-[1.1]"
+              >
+                We don’t market.<br />
+                We build <span className="text-blue-500">Growth OS.</span>
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 mb-8 font-light leading-relaxed"
+              >
+                Stop relying on chaotic ads and manual tasks.
+                We engineer a self-regulating growth machine for your business.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
+              >
+                <Link href="/generator">
+                  <Button variant="premium" size="lg" className="h-14 px-8 text-lg w-full sm:w-auto shadow-2xl shadow-blue-900/20">
+                    <Zap className="w-5 h-5 mr-2" />
+                    Build My System
+                  </Button>
+                </Link>
+                <Link href="/ideas">
+                  <Button variant="glass" size="lg" className="h-14 px-8 text-lg w-full sm:w-auto">
+                    Diagnose My Growth
+                  </Button>
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* RIGHT COLUMN: The Simulator (Hero Object) */}
+            <div className="relative">
+              {/* Glow Effect reacting to state */}
+              <div className={`absolute top - 1 / 2 left - 1 / 2 - translate - x - 1 / 2 - translate - y - 1 / 2 w - [120 %] h - [120 %] rounded - full blur - [100px] transition - colors duration - 1000 ${isSystem ? "bg-blue-900/20" : "bg-red-900/10"} `} />
+
+              <div className="relative z-10 transform lg:scale-95 lg:origin-right">
+                <GrowthSimulator isAutomated={isSystem} onToggle={setIsSystem} />
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
 
-      {/* Systems Grid */}
+      {/* Living Systems Grid */}
       <section className="py-24 bg-black border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div>
-              <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">Not Services. <span className="text-gray-500">Systems.</span></h2>
+              <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">The Webkit24 OS</h2>
               <p className="text-gray-400 text-lg max-w-xl">
-                We replace chaotic, manual marketing tasks with predictable, automated systems that run 24/7.
+                Hover over a system to see how it works. We engineer predictability into your business.
               </p>
             </div>
-            <Link href="/systems">
-              <Button variant="link" className="text-white group">
-                Explore all systems <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <SystemCard 
+            <InteractiveSystemCard
               icon={<Globe />}
-              title="Growth System"
-              desc="Full-stack digital presence optimized for conversion, not just aesthetics."
+              title="Growth Website"
+              desc="High-performance digital HQ designed for conversion."
+              systemRole="Conversion Foundation"
+              steps={[
+                "High-intent traffic flows to landing page",
+                "User behavior analyzed via heatmaps",
+                "Content adapts dynamically to convert"
+              ]}
+              whatBreaks={[
+                "Visitors bounce without taking action",
+                "Brand looks outdated and untrustworthy",
+                "Marketing budget yields zero ROI"
+              ]}
+              ctaText="Build Growth Foundation"
+              isExpanded={expandedCard === "Growth Website"}
+              onToggle={() => toggleCard("Growth Website")}
+              onMouseEnter={() => handleMouseEnter("Growth Website")}
+              onMouseLeave={handleMouseLeave}
             />
-            <SystemCard 
+            <InteractiveSystemCard
               icon={<Bot />}
               title="Lead Automation"
-              desc="Capture, qualify, and nurture leads automatically using AI chatbots and CRM logic."
+              desc="Capture and nurture leads 24/7 without lifting a finger."
+              systemRole="24/7 Lead Capture Engine"
+              steps={[
+                "Leads captured instantly 24/7",
+                "AI qualifies and scores intent",
+                "Perfectly timed follow-ups sent"
+              ]}
+              whatBreaks={[
+                "Leads cool down and buy elsewhere",
+                "Manual data entry eats your time",
+                "No organized pipeline for sales"
+              ]}
+              ctaText="Automate My Leads"
+              isExpanded={expandedCard === "Lead Automation"}
+              onToggle={() => toggleCard("Lead Automation")}
+              onMouseEnter={() => handleMouseEnter("Lead Automation")}
+              onMouseLeave={handleMouseLeave}
             />
-            <SystemCard 
+            <InteractiveSystemCard
               icon={<BarChart3 />}
               title="Scale System"
-              desc="Data-driven ad campaigns that automatically reallocate budget to high-performing creatives."
+              desc="Data-driven ad campaigns that optimize themselves — not your stress."
+              systemRole="Optimization & Scaling Engine"
+              steps={[
+                "High-performing creatives identified automatically",
+                "Audiences refined based on conversion signals",
+                "Budget reallocated to maximize ROI in real time"
+              ]}
+              whatBreaks={[
+                "Budgets scale losses, not profit",
+                "Winning ads get buried",
+                "Manual optimization slows growth"
+              ]}
+              ctaText="Enable Scaling Engine"
+              isExpanded={expandedCard === "Scale System"}
+              onToggle={() => toggleCard("Scale System")}
+              onMouseEnter={() => handleMouseEnter("Scale System")}
+              onMouseLeave={handleMouseLeave}
             />
-            <SystemCard 
+            <InteractiveSystemCard
               icon={<Layers />}
               title="Retention Loops"
-              desc="Automated email and WhatsApp sequences that turn one-time buyers into lifetime value."
+              desc="Turn one-time buyers into repeat customers — automatically."
+              systemRole="Revenue Compounding Layer"
+              steps={[
+                "Purchase behavior captured in real time",
+                "Personalized post-purchase journeys triggered",
+                "Loyalty incentives deployed to drive repeat sales"
+              ]}
+              whatBreaks={[
+                "Customers buy once and disappear",
+                "Rising acquisition costs kill margins",
+                "No lifetime value growth"
+              ]}
+              ctaText="Activate Retention Loop"
+              isExpanded={expandedCard === "Retention Loops"}
+              onToggle={() => toggleCard("Retention Loops")}
+              onMouseEnter={() => handleMouseEnter("Retention Loops")}
+              onMouseLeave={handleMouseLeave}
             />
-            <SystemCard 
+            <InteractiveSystemCard
               icon={<Zap />}
               title="Rapid MVP"
-              desc="Go from idea to functional software prototype in weeks, not months."
+              desc="Launch, test, and validate software ideas in weeks — not months."
+              systemRole="Experimentation & Expansion Engine"
+              steps={[
+                "Core problem and scope defined",
+                "Agile sprint cycles with real user feedback",
+                "MVP launched, measured, and iterated"
+              ]}
+              whatBreaks={[
+                "Ideas die in planning",
+                "Months wasted on unvalidated builds",
+                "No feedback until it’s too late"
+              ]}
+              ctaText="Launch My MVP"
+              isExpanded={expandedCard === "Rapid MVP"}
+              onToggle={() => toggleCard("Rapid MVP")}
+              onMouseEnter={() => handleMouseEnter("Rapid MVP")}
+              onMouseLeave={handleMouseLeave}
             />
-            <div className="bg-gradient-to-br from-white/10 to-transparent p-8 rounded-2xl flex items-center justify-center border border-white/10 group cursor-pointer hover:bg-white/5 transition-all">
-              <Link href="/systems" className="text-center">
-                <h3 className="text-2xl font-bold mb-2">Build Yours</h3>
-                <p className="text-gray-400 text-sm group-hover:text-white transition-colors">Configure a custom system &rarr;</p>
+
+            {/* CTA Card */}
+            <div className="bg-gradient-to-br from-white/10 to-transparent p-8 rounded-2xl flex flex-col items-center justify-center border border-white/10 group cursor-pointer hover:bg-white/5 transition-all text-center">
+              <Link href="/generator" className="w-full h-full flex flex-col items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Zap className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2">Architect Yours</h3>
+                <p className="text-gray-400 text-sm group-hover:text-white transition-colors">Start the Planner &rarr;</p>
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Interactive AI Demo Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-white/5 blur-[120px] rounded-full pointer-events-none" />
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">Powered by Intelligence.</h2>
-              <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                Our platform integrates directly with advanced AI models to analyze your market, predict trends, and optimize your growth strategy in real-time.
-              </p>
-              <ul className="space-y-4 mb-8">
-                {['Real-time market analysis', 'Predictive lead scoring', 'Automated content generation', '24/7 AI Customer Support'].map((item, i) => (
-                  <li key={i} className="flex items-center text-gray-300">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white mr-3" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/ideas">
-                <Button variant="outline" className="text-white border-white/20 hover:bg-white hover:text-black">
-                  Try AI Generator
-                </Button>
-              </Link>
-            </div>
-            
-            <div className="glass-card p-1 rounded-2xl shadow-2xl">
-              <div className="bg-black rounded-xl overflow-hidden aspect-video relative group">
-                {/* Abstract UI representation */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-32 h-32">
-                    <div className="absolute inset-0 border-2 border-white/20 rounded-full animate-ping opacity-20" />
-                    <div className="absolute inset-0 border-2 border-white/20 rounded-full animate-ping opacity-20 delay-300" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Bot className="w-12 h-12 text-white" />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
-                  <div className="flex gap-4 items-center">
-                    <div className="h-2 flex-1 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full w-2/3 bg-white rounded-full" />
-                    </div>
-                    <span className="text-xs font-mono text-gray-400">ANALYZING...</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section className="py-24 bg-black border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-6">
-           <ContactForm />
-        </div>
-      </section>
+      {/* Decision Section (Replaces Contact Form) */}
+      <DecisionSection />
 
       <Footer />
     </div>
   );
 }
 
-function SystemCard({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
-  return (
-    <motion.div 
-      whileHover={{ y: -5 }}
-      className="p-8 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
-    >
-      <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center mb-6 text-white group-hover:bg-white group-hover:text-black transition-colors">
-        {icon}
-      </div>
-      <h3 className="text-xl font-bold font-display mb-3 text-white">{title}</h3>
-      <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
-    </motion.div>
-  );
-}

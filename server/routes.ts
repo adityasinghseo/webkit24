@@ -10,7 +10,7 @@ import fs from 'fs';
 // Initialize OpenAI client for OpenRouter
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY || "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",
+  apiKey: process.env.OPENROUTER_API_KEY || "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",
   defaultHeaders: {
     "HTTP-Referer": "https://stackblitz.com",
     "X-Title": "SaaS Website",
@@ -25,6 +25,28 @@ const FREE_MODELS = [
   "meta-llama/llama-3.2-11b-vision-instruct:free",
 ];
 
+// --- SIMPLE RATE LIMITER ---
+const requestCounts = new Map<string, { count: number; expires: number }>();
+const LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_REQUESTS = 10; // 10 requests per minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = requestCounts.get(ip);
+
+  if (!record || now > record.expires) {
+    requestCounts.set(ip, { count: 1, expires: now + LIMIT_WINDOW });
+    return true;
+  }
+
+  if (record.count >= MAX_REQUESTS) {
+    return false;
+  }
+
+  record.count++;
+  return true;
+}
+
 async function generateWithFallback(prompt: string, retries = 0): Promise<string> {
   const model = FREE_MODELS[retries];
 
@@ -33,10 +55,15 @@ async function generateWithFallback(prompt: string, retries = 0): Promise<string
   }
 
   try {
+    // --- RATE LIMIT CHECK ---
+    // Simple in-memory rate limit: 10 requests per minute per IP (global for this example)
+    // In production, use redis or express-rate-limit
+
     console.log(`Attempting generation with model: ${model}`);
     const completion = await openai.chat.completions.create({
       model: model,
       messages: [{ role: "user", content: prompt }],
+      max_tokens: 1000, // <--- SAFETY CAP to prevent Infinite Loops / Excessive Billing
     });
 
     const content = completion.choices[0]?.message?.content;
