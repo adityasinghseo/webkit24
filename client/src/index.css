@@ -8,34 +8,37 @@
   --font-sans: 'Inter', sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
 
-  --background: 0 0% 0%; /* Deep Black */
-  --foreground: 0 0% 100%; /* White */
-  
+  --background: 0 0% 0%;
+  /* Deep Black */
+  --foreground: 0 0% 100%;
+  /* White */
+
   --card: 0 0% 3%;
   --card-foreground: 0 0% 100%;
-  
+
   --popover: 0 0% 3%;
   --popover-foreground: 0 0% 100%;
-  
+
   --primary: 0 0% 100%;
   --primary-foreground: 0 0% 0%;
-  
+
   --secondary: 0 0% 10%;
   --secondary-foreground: 0 0% 100%;
-  
+
   --muted: 0 0% 10%;
   --muted-foreground: 0 0% 60%;
-  
-  --accent: 210 100% 50%; /* Subtle tech blue for highlights */
+
+  --accent: 210 100% 50%;
+  /* Subtle tech blue for highlights */
   --accent-foreground: 0 0% 100%;
-  
+
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  
+
   --border: 0 0% 15%;
   --input: 0 0% 15%;
   --ring: 0 0% 100%;
-  
+
   --radius: 0.5rem;
 }
 
@@ -45,7 +48,12 @@
     font-family: var(--font-sans);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     @apply tracking-tight;
   }
@@ -55,13 +63,115 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500;
   }
-  
+
   .glass-card {
     @apply bg-white/5 backdrop-blur-lg border border-white/10;
   }
+}
 
-  .hover-glow {
-    @apply transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)];
+/* Grid Signal Animations - Refined */
+@keyframes grid-signal-horizontal {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.15;
+  }
+
+  /* Max opacity */
+  90% {
+    opacity: 0.15;
+  }
+
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes grid-signal-vertical {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.15;
+  }
+
+  /* Max opacity */
+  90% {
+    opacity: 0.15;
+  }
+
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.animate-grid-signal-h {
+  position: absolute;
+  width: 40%;
+  /* Shorter trails */
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  animation: grid-signal-horizontal 8s linear infinite;
+  will-change: transform, opacity;
+  opacity: 0;
+  /* Start invisible */
+}
+
+.animate-grid-signal-v {
+  position: absolute;
+  width: 1px;
+  height: 40%;
+  /* Shorter trails */
+  background: linear-gradient(180deg, transparent, currentColor, transparent);
+  animation: grid-signal-vertical 8s linear infinite;
+  will-change: transform, opacity;
+  opacity: 0;
+  /* Start invisible */
+}
+
+/* Text Scan Animation */
+@keyframes text-scan-shine {
+  0% {
+    background-position: 200% center;
+  }
+
+  100% {
+    background-position: -200% center;
+  }
+}
+
+.animate-text-shine {
+  background: linear-gradient(90deg,
+      #3B82F6 20%,
+      #ffffff 50%,
+      #3B82F6 80%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: text-scan-shine 3s linear infinite;
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .animate-grid-signal-h,
+  .animate-grid-signal-v,
+  .animate-text-shine,
+  .animate-spin {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    color: #3B82F6 !important;
+    /* Fallback color for text */
+    background: none !important;
   }
 }
 
@@ -69,13 +179,16 @@
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: black;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #333;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }

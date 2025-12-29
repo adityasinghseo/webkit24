@@ -39,7 +39,48 @@ export default function Home() {
 
       {/* Interactive Hero Section */}
       <section className="relative pt-24 pb-12 md:pt-32 md:pb-20 px-6 overflow-hidden min-h-[90vh] flex items-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent opacity-40 pointer-events-none" />
+        {/* Layer 1: Background Signal Grid - Refined & High Density */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Base Grid - Invisible paths (very faint) */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] opacity-10" />
+
+          {/* High Density Signal Generation */}
+          {/* We generate these deterministically to prevent hydration mismatches */}
+          {[...Array(30)].map((_, i) => {
+            const isHorizontal = i % 2 === 0;
+            const colorClass = i % 3 === 0 ? "text-green-500" : "text-blue-500"; // Use text color for currentColor
+            const delay = (i * 0.7) % 5; // Spread delays
+            const duration = 5 + (i % 5); // Varying speeds (5-10s)
+
+            // Grid alignment logic (keep them on 40px grid lines)
+            const topPos = isHorizontal ? `${(i * 10) % 100}%` : `${(i * 5 * 2) % 100}%`;
+            const leftPos = !isHorizontal ? `${(i * 10) % 100}%` : `${(i * 3 * 7) % 100}%`;
+
+            return (
+              <div
+                key={i}
+                className={`absolute overflow-hidden ${isHorizontal ? "w-full h-[1px] top-0 left-0" : "h-full w-[1px] top-0 left-0"
+                  }`}
+                style={{
+                  top: isHorizontal ? topPos : 0,
+                  left: !isHorizontal ? leftPos : 0,
+                }}
+              >
+                <div
+                  className={`${isHorizontal ? "w-[10%] h-full" : "h-[10%] w-full"} ${colorClass} bg-current ${isHorizontal ? "animate-grid-signal-h" : "animate-grid-signal-v"
+                    }`}
+                  style={{
+                    animationDelay: `${delay}s`,
+                    animationDuration: `${duration}s`,
+                    opacity: 0.15 // Target opacity as per brief
+                  }}
+                />
+              </div>
+            );
+          })}
+
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent opacity-40" />
+        </div>
 
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -61,7 +102,7 @@ export default function Home() {
                 className="text-5xl md:text-6xl lg:text-7xl font-bold font-display tracking-tighter mb-6 text-white leading-[1.1]"
               >
                 We don’t market.<br />
-                We build <span className="text-blue-500">Growth OS.</span>
+                We build <span className="font-bold animate-text-shine">Growth OS.</span>
               </motion.h1>
 
               <motion.p
@@ -73,6 +114,11 @@ export default function Home() {
                 Stop relying on chaotic ads and manual tasks.
                 We engineer a self-regulating growth machine for your business.
               </motion.p>
+
+              {/* Layer 4: Signal Flow (Hero -> Simulator) */}
+              <div className="hidden lg:block absolute top-[20%] left-[40%] w-[200px] h-px overflow-hidden pointer-events-none z-0">
+                <div className="w-full h-full bg-gradient-to-r from-transparent via-blue-500/50 to-transparent animate-grid-signal-h" />
+              </div>
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

@@ -100,6 +100,8 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
                             value={metrics.visitors}
                             active={stage !== "idle"}
                             color="text-blue-400"
+                            idleAnimation={{ scale: [1, 1.05, 1], opacity: [0.8, 1, 0.8] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                         />
 
                         <Node
@@ -109,6 +111,8 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
                             active={stage !== "idle" && metrics.visitors > 100}
                             color={isAutomated ? "text-purple-400" : "text-red-400"}
                             warning={!isAutomated}
+                            idleAnimation={{ y: [0, -4, 0] }}
+                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                         />
 
                         <Node
@@ -117,6 +121,8 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
                             value={`$${metrics.sales * 100}`}
                             active={stage !== "idle" && metrics.leads > 5}
                             color={isAutomated ? "text-green-400" : "text-red-400"}
+                            idleAnimation={{ opacity: [0.5, 1, 0.5] }}
+                            transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 5 }}
                         />
                     </div>
 
@@ -241,15 +247,30 @@ function generateLog(isSystem: boolean, visitors: number): Log | null {
     };
 }
 
-function Node({ icon, label, value, active, color, warning }: { icon: any, label: string, value: string | number, active: boolean, color: string, warning?: boolean }) {
+function Node({ icon, label, value, active, color, warning, idleAnimation, transition }: {
+    icon: any,
+    label: string,
+    value: string | number,
+    active: boolean,
+    color: string,
+    warning?: boolean,
+    idleAnimation?: any,
+    transition?: any
+}) {
     return (
         <div className="relative z-10 flex flex-col items-center">
             <motion.div
-                animate={{
-                    scale: active ? 1.1 : 1,
-                    borderColor: active ? (warning ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.5)") : "rgba(255,255,255,0.1)",
-                    boxShadow: active ? (warning ? "0 0 30px rgba(239,68,68,0.2)" : "0 0 30px rgba(255,255,255,0.1)") : "none"
-                }}
+                animate={active ? {
+                    scale: 1.1,
+                    borderColor: warning ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.5)",
+                    boxShadow: warning ? "0 0 30px rgba(239,68,68,0.2)" : "0 0 30px rgba(255,255,255,0.1)",
+                    y: 0, opacity: 1
+                } : (idleAnimation || {
+                    scale: 1,
+                    borderColor: "rgba(255,255,255,0.1)",
+                    boxShadow: "none"
+                })}
+                transition={active ? { duration: 0.5 } : (transition || { duration: 0.5 })}
                 className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl bg-black border border-white/10 flex items-center justify-center mb-2 md:mb-4 transition-colors duration-500`}
             >
                 <div className={`w-6 h-6 md:w-10 md:h-10 ${active ? color : "text-gray-600"} transition-colors duration-300`}>
