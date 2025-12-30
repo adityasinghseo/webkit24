@@ -1,450 +1,613 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useGeneratePlan } from "@/hooks/use-ai";
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { generatePlanSchema, type GeneratePlanRequest, type AIPlanResponse } from "@shared/schema";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, CheckCircle2, ArrowRight, Check, ChevronsUpDown } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { ArrowRight, CheckCircle2, ChevronRight, Zap, Play, Lock, AlertCircle, BarChart3, Settings, Users, Terminal, Activity, Layers, Bot, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link } from "wouter";
 
-// --- SMART PRESETS ---
-const PRESET_DATA: Record<string, {
-  audience: string;
-  goal: string;
-  website: string;
-  usps: string[];
-}> = {
-  "Doctor / Clinic": {
-    audience: "Patients, Local Residents",
-    goal: "leads",
-    website: "No Website",
-    usps: ["Experienced Doctors", "Emergency Support", "Affordable Consultation", "Modern Equipment"]
-  },
-  "Dental Clinic": {
-    audience: "Local Families, Patients needing cosmetic work",
-    goal: "leads",
-    website: "No Website",
-    usps: ["Pain-Free Treatment", "Cosmetic Experts", "Weekend Open", "Insurance Accepted"]
-  },
-  "Real Estate Agent": {
-    audience: "Home Buyers, Property Investors",
-    goal: "leads",
-    website: "Needs Redesign",
-    usps: ["Top 1% Agent", "Local Market Expert", "Free Valuation", "Quick Sales"]
-  },
-  "SaaS / Startup": {
-    audience: "B2B Founders, Product Teams",
-    goal: "sales",
-    website: "High Performing",
-    usps: ["AI-Powered", "Scalable", "Enterprise Security", "24/7 Support"]
-  },
-  "E-commerce Brand": {
-    audience: "Online Shoppers, Gen Z",
-    goal: "sales",
-    website: "Good Condition",
-    usps: ["Free Shipping", "Premium Quality", "Sustainable", "Handmade"]
-  },
-  "Restaurant / Cafe": {
-    audience: "Local Foodies, Couples, Families",
-    goal: "branding",
-    website: "No Website",
-    usps: ["Best Ambiance", "Authentic Taste", "Live Music", "Pet Friendly"]
-  },
-  "Gym / Fitness": {
-    audience: "Fitness Enthusiasts, Beginners",
-    goal: "leads",
-    website: "Needs Redesign",
-    usps: ["Certified Trainers", "24/7 Access", "Modern Equipment", "Free Trial"]
-  }
+// --- DATA TYPES ---
+type Step = 1 | 2 | 3 | 4 | 5; // 5 is Result
+type SystemStatus = "LOCKED" | "SCANNING" | "CALIBRATING" | "ACTIVE" | "READY" | "PENDING";
+
+interface SelectionState {
+  businessContext: string;
+  growthStage: string;
+  budget: string;
+  primaryGoal: string;
+}
+
+interface Blueprint {
+  coreSystem: { name: string; desc: string; icon: React.ReactNode; color: string };
+  supportingSystems: { name: string; desc: string }[];
+  deferredSystems: { name: string; reason: string }[];
+  insight: string;
+}
+
+// --- CONSTANTS ---
+const BUSINESS_CONTEXTS = [
+  { id: "service", title: "Service Business", desc: "Consulting, agencies, professional services", icon: <Users className="w-5 h-5 text-blue-400" /> },
+  { id: "clinic", title: "Clinic / Healthcare", desc: "Doctors, hospitals, wellness centers", icon: <div className="w-5 h-5 text-red-400 font-bold flex items-center justify-center">+</div> },
+  { id: "startup", title: "Startup / SaaS", desc: "Early-stage or scaling software products", icon: <Zap className="w-5 h-5 text-yellow-400" /> },
+  { id: "local", title: "Local Business", desc: "Location-based services & stores", icon: <Settings className="w-5 h-5 text-green-400" /> },
+  { id: "ecommerce", title: "E-commerce", desc: "Online product businesses", icon: <BarChart3 className="w-5 h-5 text-purple-400" /> },
+];
+
+const GROWTH_STAGES = [
+  { id: "early", title: "Early Stage", desc: "Limited traffic, inconsistent leads" },
+  { id: "growth", title: "Growth Stage", desc: "Leads coming in, systems breaking" },
+  { id: "scaling", title: "Scaling Stage", desc: "High volume, optimization required" },
+];
+
+const BUDGETS = [
+  { id: "starter", title: "₹10k – ₹25k", desc: "Starter" },
+  { id: "growth", title: "₹25k – ₹50k", desc: "Growth" },
+  { id: "scale", title: "₹50k – ₹1L", desc: "Scale" },
+  { id: "enterprise", title: "₹1L+", desc: "Enterprise" },
+];
+
+const GOALS = [
+  { id: "leads", title: "Predictable Leads" },
+  { id: "sales", title: "Sales Automation" },
+  { id: "revenue", title: "Revenue Growth" },
+  { id: "validation", title: "Market Validation" },
+];
+
+// --- RULE ENGINE LOGIC ---
+
+const SYSTEM_DEFS = {
+  website: { name: "Growth Website", desc: "Conversion Foundation", icon: <Globe className="w-5 h-5" />, color: "blue" },
+  leads: { name: "Lead Automation", desc: "24/7 Capture Engine", icon: <Bot className="w-5 h-5" />, color: "purple" },
+  scale: { name: "Scale System", desc: "Optimization Engine", icon: <BarChart3 className="w-5 h-5" />, color: "green" },
+  retention: { name: "Retention Loops", desc: "Revenue Compounding", icon: <Layers className="w-5 h-5" />, color: "orange" },
+  mvp: { name: "Rapid MVP", desc: "Validation Engine", icon: <Zap className="w-5 h-5" />, color: "yellow" },
 };
 
-const CATEGORIES = Object.keys(PRESET_DATA);
+function generateBlueprint(s: SelectionState): Blueprint {
+  let core = SYSTEM_DEFS.leads; // Default Safety Net
+  let supporting: typeof SYSTEM_DEFS[keyof typeof SYSTEM_DEFS][] = [];
+  let deferred = [];
+  let insight = "System alignment complete.";
 
-export default function GrowthGenerator() {
-  const mutation = useGeneratePlan();
-  const [result, setResult] = useState<AIPlanResponse | null>(null);
-  const [open, setOpen] = useState(false);
+  // 1. CORE SYSTEM SELECTION (Priority Logic)
 
-  const form = useForm<GeneratePlanRequest>({
-    resolver: zodResolver(generatePlanSchema),
-    defaultValues: {
-      businessCategory: "",
-      city: "",
-      budget: "",
-      goal: "leads",
-      websiteStatus: "",
-      targetAudience: "",
-      competitors: "",
-      usp: "",
-    },
-  });
-
-  // Dynamic chips based on selection
-  const currentCategory = form.watch("businessCategory");
-  const defaultChips = ["Best Price", "24/7 Support", "AI-Powered", "Eco-Friendly", "Premium Quality"];
-  const activeUsps = PRESET_DATA[currentCategory]?.usps || defaultChips;
-
-  function onCategorySelect(category: string) {
-    form.setValue("businessCategory", category);
-    setOpen(false);
-
-    // --- AUTO-FILL ENGINE ---
-    const preset = PRESET_DATA[category];
-    if (preset) {
-      // Only auto-fill if the field is empty to respect user edits
-      if (!form.getValues("targetAudience")) form.setValue("targetAudience", preset.audience);
-      if (!form.getValues("websiteStatus")) form.setValue("websiteStatus", preset.website);
-
-      // Goal is a dropdown, so we can just set it
-      form.setValue("goal", preset.goal);
+  // PRIORITY A: Validation (Goal or Stage)
+  if (s.primaryGoal === 'validation' || (s.businessContext === 'startup' && s.growthStage === 'early')) {
+    core = SYSTEM_DEFS.mvp;
+    insight = s.primaryGoal === 'validation'
+      ? "Your primary goal is 'Validation'. Building complex automation now is premature. We prioritize 'Rapid MVP' to test your offer before scaling."
+      : "Early-stage startups risk failure by scaling too fast. Your OS prioritizes 'Rapid Validation' to ensure market fit first.";
+  }
+  // PRIORITY B: Trust & Conversion (Service/Clinic/Local Early)
+  else if (['service', 'clinic', 'local'].includes(s.businessContext) && s.growthStage === 'early') {
+    core = SYSTEM_DEFS.website;
+    if (s.businessContext === 'local') {
+      insight = "For local businesses, 'Trust' equates to 'Foot Traffic'. Your 'Growth Website' (and Maps presence) must capture high-intent local searches before you run ads.";
+    } else {
+      insight = "Service businesses rely on trust. Without a high-conversion 'Growth Website', expensive traffic will bounce. This is your foundation.";
+    }
+  }
+  // PRIORITY C: Revenue & LTV (E-commerce or Revenue Goal)
+  else if (s.businessContext === 'ecommerce' || (s.primaryGoal === 'revenue' && s.growthStage !== 'early')) {
+    if (s.growthStage === 'early' && s.businessContext === 'ecommerce') {
+      core = SYSTEM_DEFS.website;
+      insight = "For early e-commerce, your store IS the product. We prioritize a 'Growth Website' to ensure maximum conversion on every click.";
+    } else {
+      core = SYSTEM_DEFS.retention;
+      insight = s.primaryGoal === 'revenue'
+        ? "To maximize 'Revenue Growth', we shift focus to LTV. 'Retention Loops' compound your profit by monetizing past customers."
+        : "For e-commerce, profit is in the second purchase. 'Retention Loops' will automatically increase LTV.";
+    }
+  }
+  // PRIORITY D: Scale (High Volume + High Budget)
+  else if (['scale', 'enterprise'].includes(s.budget) && s.growthStage === 'scaling') {
+    core = SYSTEM_DEFS.scale;
+    insight = "At your volume, manual optimization fails. The 'Scale System' will algorithmically optimize ad spend to stabilize CAC.";
+  }
+  // PRIORITY E: Lead Capture (Default for Growth/Service)
+  else {
+    core = SYSTEM_DEFS.leads;
+    if (s.businessContext === 'local') {
+      insight = "You have local traffic, but inquiries are slipping through the cracks. 'Lead Automation' ensures 24/7 response to every call and form fill.";
+    } else {
+      insight = s.primaryGoal === 'sales'
+        ? "To achieve 'Sales Automation', you need a reliable pipeline. 'Lead Automation' installs a 24/7 capture engine to feed your sales team."
+        : "You have traffic but need systemized follow-up. 'Lead Automation' fills the gap between interest and booking.";
     }
   }
 
-  function onSubmit(data: GeneratePlanRequest) {
-    setResult(null);
-    mutation.mutate(data, {
-      onSuccess: (data) => {
-        setResult(data as AIPlanResponse);
-      },
-    });
+  // 2. SUPPORTING SYSTEM SELECTION (Dynamic Builder)
+
+  // Always add Foundation if not Core
+  if (core.name !== "Growth Website") supporting.push(SYSTEM_DEFS.website);
+
+  // Add Lead Gen if not Core and not very early/low-budget
+  if (core.name !== "Lead Automation") {
+    if (s.growthStage !== 'early' || s.primaryGoal === 'leads' || s.businessContext === 'service') {
+      supporting.push(SYSTEM_DEFS.leads);
+    }
   }
 
+  // Add Retention if valid context
+  if (core.name !== "Retention Loops") {
+    if (s.businessContext === 'ecommerce' || s.primaryGoal === 'revenue' || s.growthStage === 'scaling') {
+      supporting.push(SYSTEM_DEFS.retention);
+    }
+  }
+
+  // Add MVP if Startup/Validation (as support)
+  if (core.name !== "Rapid MVP") {
+    if (s.businessContext === 'startup' || s.primaryGoal === 'validation') {
+      supporting.push(SYSTEM_DEFS.mvp);
+    } else {
+      deferred.push({ name: "Rapid MVP", reason: s.businessContext === 'startup' ? "Not immediate priority" : "Validation Phase Complete" });
+    }
+  }
+
+  // 3. CONSTRAINTS & DEFERRED
+
+  // Scale System Logic (Strict Budget Lock)
+  if (core.name !== "Scale System") {
+    if (['starter', 'growth'].includes(s.budget)) {
+      deferred.push({ name: "Scale System", reason: "Requires > ₹50k ad spend" });
+    } else {
+      // Only add as support if context justifies it
+      if (s.growthStage === 'scaling' || s.primaryGoal === 'revenue') {
+        supporting.push(SYSTEM_DEFS.scale);
+      } else {
+        deferred.push({ name: "Scale System", reason: "Reserved for high-volume scaling" });
+      }
+    }
+  }
+
+  // Fix Ghost Systems: Add anything not Core, Supporting, or Deferred to Deferred
+  const allSystems = Object.values(SYSTEM_DEFS);
+  allSystems.forEach(sys => {
+    const isCore = core.name === sys.name;
+    const isSupporting = supporting.find(s => s.name === sys.name);
+    const isDeferred = deferred.find(d => d.name === sys.name);
+
+    if (!isCore && !isSupporting && !isDeferred) {
+      deferred.push({ name: sys.name, reason: "Inactive for current model" });
+    }
+  });
+
+  // Sort Supporting: Website first, then others
+  supporting.sort((a, b) => (a.name === "Growth Website" ? -1 : 1));
+
+  return {
+    coreSystem: { ...core, color: core.color },
+    supportingSystems: supporting,
+    deferredSystems: deferred,
+    insight
+  };
+}
+
+
+// --- COMPONENT ---
+
+export default function GrowthGenerator() {
+  const [step, setStep] = useState<Step>(1);
+  const [selections, setSelections] = useState<SelectionState>({
+    businessContext: "",
+    growthStage: "",
+    budget: "",
+    primaryGoal: "",
+  });
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [blueprint, setBlueprint] = useState<Blueprint | null>(null);
+
+  // Scroll to top on step change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
+
+  const handleNext = () => {
+    if (step < 4) {
+      setStep((prev) => (prev + 1) as Step);
+    } else {
+      runSimulation();
+    }
+  };
+
+  const runSimulation = () => {
+    setIsSimulating(true);
+    const generated = generateBlueprint(selections);
+    setBlueprint(generated);
+
+    // Simulation Logs
+    const steps = [
+      "Attaching context: " + BUSINESS_CONTEXTS.find(c => c.id === selections.businessContext)?.title + "...",
+      "Analyzing growth vectors...",
+      "Validating budget constraints...",
+      "Optimizing system topology...",
+      "Compiling final blueprint..."
+    ];
+
+    let delay = 0;
+    steps.forEach((log, index) => {
+      delay += 800; // 800ms per log
+      setTimeout(() => {
+        setLogs(prev => [...prev, log]);
+        if (index === steps.length - 1) {
+          setTimeout(() => {
+            setIsSimulating(false);
+            setStep(5);
+          }, 1000);
+        }
+      }, delay);
+    });
+  };
+
+  const handleSelect = (key: keyof SelectionState, value: string) => {
+    setSelections(prev => ({ ...prev, [key]: value }));
+  };
+
+  const canProceed = () => {
+    if (step === 1) return !!selections.businessContext;
+    if (step === 2) return !!selections.growthStage;
+    if (step === 3) return !!selections.budget;
+    if (step === 4) return !!selections.primaryGoal;
+    return false;
+  };
+
+  // Helper for Panel Status
+  const getSystemStatus = (sysName: string): SystemStatus => {
+    // If blueprint exists (Step 5), use it directly
+    if (step === 5 && blueprint) {
+      if (blueprint.coreSystem.name === sysName) return "ACTIVE";
+      if (blueprint.supportingSystems.find(s => s.name === sysName)) return "READY";
+      if (blueprint.deferredSystems.find(s => s.name === sysName)) return "LOCKED";
+      return "PENDING";
+    }
+
+    // Live States Forecast (Mirroring generateBlueprint logic)
+    // This ensures we don't show "Ready" for a system that will be "Inactive" in the blueprint
+
+    // 1. Forecast Core System based on current inputs
+    let anticipatedCore = "";
+    if (['startup', 'early'].includes(selections.businessContext) && selections.growthStage === 'early') anticipatedCore = "Rapid MVP";
+    else if (selections.primaryGoal === 'validation') anticipatedCore = "Rapid MVP";
+    else if (['service', 'clinic', 'local'].includes(selections.businessContext) && selections.growthStage === 'early') anticipatedCore = "Growth Website";
+    else if (['ecommerce'].includes(selections.businessContext) && (selections.primaryGoal === 'revenue' || selections.growthStage === 'scaling')) anticipatedCore = "Retention Loops";
+    else if (['scale', 'enterprise'].includes(selections.budget) && selections.growthStage === 'scaling') anticipatedCore = "Scale System";
+    else anticipatedCore = "Lead Automation"; // Default forecast
+
+    const isForecastCore = anticipatedCore === sysName;
+
+    if (sysName === "Growth Website") return step >= 1 ? (isForecastCore ? "SCANNING" : "READY") : "PENDING";
+
+    if (sysName === "Lead Automation") {
+      if (step < 2) return "LOCKED";
+      if (isForecastCore) return "CALIBRATING";
+      // Allow as READY if stage/goal/context aligns
+      if (selections.growthStage !== 'early' || selections.primaryGoal === 'leads' || selections.businessContext === 'service' || selections.businessContext === 'local') return "READY";
+      return "LOCKED";
+    }
+
+    if (sysName === "Scale System") {
+      if (step < 3) return "LOCKED";
+      if (isForecastCore) return "SCANNING";
+      if (selections.growthStage === 'scaling' || selections.primaryGoal === 'revenue') return "READY";
+      return "LOCKED";
+    }
+
+    if (sysName === "Retention Loops") {
+      if (step < 4) return "LOCKED";
+      if (isForecastCore) return "CALIBRATING";
+      if (selections.businessContext === 'ecommerce' || selections.primaryGoal === 'revenue') return "READY";
+      return "LOCKED";
+    }
+
+    if (sysName === "Rapid MVP") {
+      if (step < 1) return "LOCKED";
+      if (isForecastCore) return "SCANNING";
+      if (selections.businessContext === 'startup' || selections.primaryGoal === 'validation') return "READY";
+      return "LOCKED";
+    }
+
+    return "PENDING";
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
       <Navbar />
 
       <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">360° Growth Plan Generator</h1>
-          <p className="text-gray-400 text-lg">
-            Tell us about your business. Our AI will architect a custom digital growth system for you in seconds.
-          </p>
+
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">Build Your Growth OS</h1>
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-2">Assemble the systems your business needs to grow — in the right order.</p>
+          <p className="text-xs font-mono text-gray-600 uppercase tracking-widest">This is not a template. This is system architecture.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Form */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="glass-card p-8 rounded-2xl"
-          >
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
 
-                {/* SMART COMBOBOX */}
-                <FormField
-                  control={form.control}
-                  name="businessCategory"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Business Category</FormLabel>
-                      <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className={cn(
-                                "w-full justify-between bg-white/5 border-white/10 text-left font-normal hover:bg-white/10 hover:text-white",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value
-                                ? CATEGORIES.find((c) => c === field.value) || field.value
-                                : "Select or type category..."}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-zinc-900 border-white/10 text-white">
-                          <Command className="bg-transparent">
-                            <CommandInput placeholder="Search category (e.g. Doctor, SaaS)..." className="text-white" />
-                            <CommandList>
-                              <CommandEmpty>No category found. You can type anything.</CommandEmpty>
-                              <CommandGroup>
-                                {CATEGORIES.map((category) => (
-                                  <CommandItem
-                                    value={category}
-                                    key={category}
-                                    onSelect={() => onCategorySelect(category)}
-                                    className="data-[selected=true]:bg-white/10 data-[selected=true]:text-white cursor-pointer"
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        category === field.value
-                                          ? "opacity-100"
-                                          : "opacity-0"
-                                      )}
-                                    />
-                                    {category}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>City / Target Market (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. New York, Global..." className="bg-white/5 border-white/10" {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="websiteStatus"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Current Website Status</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="bg-white/5 border-white/10">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="No Website">No Website</SelectItem>
-                            <SelectItem value="Needs Redesign">Needs Redesign</SelectItem>
-                            <SelectItem value="Good Condition">Good Condition</SelectItem>
-                            <SelectItem value="High Performing">High Performing</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="budget"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Monthly Budget</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="bg-white/5 border-white/10">
-                              <SelectValue placeholder="Select range" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="starter">Under $1k</SelectItem>
-                            <SelectItem value="growth">$1k - $5k</SelectItem>
-                            <SelectItem value="scale">$5k - $20k</SelectItem>
-                            <SelectItem value="enterprise">$20k+</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="targetAudience"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Target Audience</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Who are your ideal customers?" className="bg-white/5 border-white/10" {...field} value={field.value || ''} />
-                      </FormControl>
-                      {/* Chips are helpful but optional since we have auto-fill now */}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* HIDDEN COMPETITORS FIELD (still in schema but hidden from UI as requested) */}
-                <div className="hidden">
-                  <FormField
-                    control={form.control}
-                    name="competitors"
-                    render={({ field }) => (
-                      <Input {...field} value={field.value || ''} />
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="usp"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Unique Selling Point (USP)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="What makes you different?" className="bg-white/5 border-white/10" {...field} value={field.value || ''} />
-                      </FormControl>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {activeUsps.map(chip => (
-                          <div key={chip}
-                            className="text-xs bg-white/5 px-2 py-1 rounded-full cursor-pointer hover:bg-white/10 transition-colors text-gray-400"
-                            onClick={() => form.setValue("usp", chip)}
-                          >
-                            {chip}
-                          </div>
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="goal"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Primary Goal</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="bg-white/5 border-white/10">
-                            <SelectValue placeholder="Choose goal" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="leads">More Leads</SelectItem>
-                          <SelectItem value="sales">More Sales</SelectItem>
-                          <SelectItem value="branding">Brand Awareness</SelectItem>
-                          <SelectItem value="retention">Customer Retention</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button type="submit" className="w-full" variant="premium" disabled={mutation.isPending}>
-                  {mutation.isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" /> Generating Strategy...
-                    </>
-                  ) : (
-                    "Generate My Plan"
-                  )}
-                </Button>
-              </form>
-            </Form>
-          </motion.div>
-
-          {/* Result */}
-          <div className="relative min-h-[400px]">
+          {/* LEFT PANEL - WIZARD */}
+          <div className="lg:col-span-7 space-y-8 min-h-[500px]">
             <AnimatePresence mode="wait">
-              {!result && !mutation.isPending && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex items-center justify-center text-center p-8 border border-dashed border-white/10 rounded-2xl"
-                >
-                  <div>
-                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-                      <Loader2 className="w-8 h-8 text-gray-500" />
-                    </div>
-                    <p className="text-gray-500">Waiting for inputs...</p>
+
+              {/* STEP 1 */}
+              {step === 1 && (
+                <StepContainer key="step1" step={1} title="Define Your Business Context" subtext="Growth systems depend on how your business actually operates.">
+                  <p className="text-xs text-gray-500 font-mono mb-4 uppercase tracking-wider">Select one option to continue</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {BUSINESS_CONTEXTS.map(ctx => (
+                      <div
+                        key={ctx.id}
+                        onClick={() => handleSelect("businessContext", ctx.id)}
+                        className={`p-6 rounded-xl border cursor-pointer transition-all hover:border-blue-500/50 hover:bg-white/5 ${selections.businessContext === ctx.id ? "bg-blue-900/10 border-blue-500 ring-1 ring-blue-500" : "bg-white/5 border-white/10"}`}
+                      >
+                        <div className="mb-3">{ctx.icon}</div>
+                        <h3 className="font-bold mb-1">{ctx.title}</h3>
+                        <p className="text-sm text-gray-400">{ctx.desc}</p>
+                      </div>
+                    ))}
                   </div>
-                </motion.div>
+                </StepContainer>
               )}
 
-              {mutation.isPending && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 glass-card rounded-2xl"
-                >
-                  <Loader2 className="w-12 h-12 text-white animate-spin mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Analyzing Market Data...</h3>
-                  <p className="text-gray-400">Our AI is constructing your custom roadmap.</p>
-                </motion.div>
+              {/* STEP 2 */}
+              {step === 2 && (
+                <StepContainer key="step2" step={2} title="Select Your Growth Stage" subtext="Systems evolve as your business grows.">
+                  <div className="space-y-4">
+                    {GROWTH_STAGES.map(stage => (
+                      <div
+                        key={stage.id}
+                        onClick={() => handleSelect("growthStage", stage.id)}
+                        className={`p-6 rounded-xl border cursor-pointer transition-all hover:bg-white/5 flex items-center justify-between ${selections.growthStage === stage.id ? "bg-blue-900/10 border-blue-500" : "bg-white/5 border-white/10"}`}
+                      >
+                        <div>
+                          <h3 className="font-bold text-lg">{stage.title}</h3>
+                          <p className="text-gray-400">{stage.desc}</p>
+                        </div>
+                        {selections.growthStage === stage.id && <CheckCircle2 className="text-blue-500" />}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-6 text-sm text-gray-500 text-center italic">Your Growth OS will adapt based on this stage.</p>
+                </StepContainer>
               )}
 
-              {result && (
+              {/* STEP 3 */}
+              {step === 3 && (
+                <StepContainer key="step3" step={3} title="Monthly Growth Investment" subtext="Budget doesn’t create growth. Systems decide how effectively it’s used.">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {BUDGETS.map(budget => (
+                      <div
+                        key={budget.id}
+                        onClick={() => handleSelect("budget", budget.id)}
+                        className={`p-6 rounded-xl border cursor-pointer transition-all text-center hover:bg-white/5 ${selections.budget === budget.id ? "bg-blue-900/10 border-blue-500" : "bg-white/5 border-white/10"}`}
+                      >
+                        <h3 className="font-bold text-xl mb-1">{budget.title}</h3>
+                        <p className="text-xs text-gray-500 uppercase tracking-widest">{budget.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-6 text-xs text-gray-500 font-mono uppercase tracking-widest text-center">Higher budgets accelerate systems — they don’t replace them.</p>
+                </StepContainer>
+              )}
+
+              {/* STEP 4 */}
+              {step === 4 && (
+                <StepContainer key="step4" step={4} title="Primary Growth Objective" subtext="Choose one main outcome. All systems will align to support it.">
+                  <div className="grid grid-cols-1 gap-4">
+                    {GOALS.map(goal => (
+                      <div
+                        key={goal.id}
+                        onClick={() => handleSelect("primaryGoal", goal.id)}
+                        className={`p-5 rounded-xl border cursor-pointer transition-all hover:border-blue-500/30 ${selections.primaryGoal === goal.id ? "bg-blue-900/10 border-blue-500" : "bg-white/5 border-white/10"}`}
+                      >
+                        <h3 className="font-bold text-center">{goal.title}</h3>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-6 text-sm text-gray-500 text-center">One clear goal prevents system conflicts.</p>
+                </StepContainer>
+              )}
+
+              {/* STEP 5 - RESULT (BLUEPRINT) */}
+              {step === 5 && blueprint && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="glass-card p-8 rounded-2xl border-white/20 shadow-2xl"
+                  className="space-y-8"
                 >
-                  <div className="mb-6 pb-6 border-b border-white/10 flex justify-between items-start">
+                  <div className="p-8 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/20 shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4">
+                      <div className="px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/50 text-blue-300 text-xs font-mono uppercase tracking-widest">
+                        Blueprint Ready
+                      </div>
+                    </div>
+
+                    <h2 className="text-3xl font-display font-bold mb-8">Your Growth OS Blueprint</h2>
+
+                    <div className="space-y-8 relative z-10">
+                      {/* Core System */}
+                      <div>
+                        <h3 className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-3">Core System (Priority #1)</h3>
+                        <div className={`p-6 rounded-xl bg-${blueprint.coreSystem.color}-900/20 border border-${blueprint.coreSystem.color}-500/30 flex items-center justify-between`}>
+                          <div className="flex items-center gap-4">
+                            <div className={`w-2 h-16 bg-${blueprint.coreSystem.color}-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)]`} />
+                            <div>
+                              <div className="font-bold text-2xl mb-1">{blueprint.coreSystem.name}</div>
+                              <div className="text-sm text-gray-300">{blueprint.coreSystem.desc}</div>
+                            </div>
+                          </div>
+                          <CheckCircle2 className={`text-${blueprint.coreSystem.color}-500 w-8 h-8`} />
+                        </div>
+                      </div>
+
+                      {/* Supporting Systems */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {blueprint.supportingSystems.map((sys, i) => (
+                          <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="font-bold">{sys.name}</div>
+                              <div className="text-[10px] px-2 py-0.5 rounded bg-white/10 text-gray-400">SUPPORT</div>
+                            </div>
+                            <div className="text-xs text-gray-400">{sys.desc}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Deferred Systems */}
+                      {blueprint.deferredSystems.length > 0 && (
+                        <div>
+                          <h3 className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-3">Deferred Systems (Inactive)</h3>
+                          <div className="space-y-2">
+                            {blueprint.deferredSystems.map((sys, i) => (
+                              <div key={i} className="flex items-center gap-3 text-gray-500 p-3 rounded-lg border border-dashed border-white/10 bg-black/20">
+                                <Lock className="w-4 h-4" />
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                                  <span className="text-sm font-medium">{sys.name}</span>
+                                  <span className="text-xs opacity-70">Reason: {sys.reason}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="text-center space-y-4">
+                    <div className="inline-block p-1 rounded-full bg-gradient-to-r from-white/20 to-white/5 mb-4">
+                      <Button
+                        size="lg"
+                        variant="premium"
+                        className="h-14 px-12 text-lg rounded-full w-full sm:w-auto shadow-2xl shadow-blue-500/20"
+                        onClick={() => window.open('https://calendly.com/', '_blank')}
+                      >
+                        <Zap className="w-5 h-5 mr-2 fill-current" />
+                        Build This Growth OS
+                      </Button>
+                    </div>
                     <div>
-                      <h2 className="text-2xl font-bold font-display">Your Growth Blueprint</h2>
-                      <p className="text-gray-400 text-sm mt-1">
-                        Strategy by <span className="text-white font-semibold">Webkit24 AI</span> • Timeline: <span className="text-white">{result.timeline}</span>
-                      </p>
-                    </div>
-                    {/* Disclaimer Badge */}
-                    <div className="bg-white/5 px-3 py-1 rounded-full border border-white/10">
-                      <p className="text-xs text-gray-400">AI Generated Insight</p>
+                      <Link href="/ideas">
+                        <Button variant="link" className="text-gray-400 hover:text-white">
+                          Diagnose My Current System <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </Link>
                     </div>
                   </div>
 
-                  {/* "Why Hire" Insight from AI */}
-                  {result.whyHireWebkit24 && (
-                    <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 p-4 rounded-lg border border-blue-500/20 mb-6">
-                      <p className="text-blue-200 text-sm font-medium flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-pulse" /> Expert Insight: {result.whyHireWebkit24}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="space-y-6">
-                    <ResultSection title="Marketing Channels" items={result.marketingChannels} />
-                    <ResultSection title="Website Requirements" items={result.websiteNeeds} />
-                    <ResultSection title="Automation Stack" items={result.automations} />
-                  </div>
-
-                  <div className="mt-8 pt-6 border-t border-white/10 space-y-4">
-                    <p className="text-center text-gray-400 text-sm mb-4">
-                      Ready to execute this plan? Don't do it alone.
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Button className="w-full bg-white text-black hover:bg-gray-200" onClick={() => window.open('https://calendly.com/', '_blank')}>
-                        Book Free Strategy Call
-                      </Button>
-                      <Button className="w-full" variant="outline" onClick={() => window.open('https://wa.me/1234567890', '_blank')}>
-                        Chat on WhatsApp
-                      </Button>
-                    </div>
-                  </div>
                 </motion.div>
               )}
+
             </AnimatePresence>
+
+            {/* Navigation Buttons (only for Wizard steps) */}
+            {step < 5 && (
+              <div className="flex justify-end pt-4">
+                <Button
+                  size="lg"
+                  onClick={handleNext}
+                  disabled={!canProceed()}
+                  className={`${canProceed() ? "bg-white text-black hover:bg-gray-200" : "bg-white/10 text-gray-500 cursor-not-allowed"}`}
+                >
+                  {step === 4 ? "Assemble System" : "Next Step"}
+                  {step !== 4 && <ChevronRight className="w-4 h-4 ml-2" />}
+                </Button>
+              </div>
+            )}
           </div>
+
+          {/* RIGHT PANEL - LIVE SIMULATION */}
+          <div className="lg:col-span-5 relative hidden lg:block">
+            <div className="sticky top-32">
+              <div className="glass-card rounded-2xl border-white/10 overflow-hidden shadow-2xl">
+                {/* Header */}
+                <div className="bg-white/5 border-b border-white/10 p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {isSimulating ? <Activity className="w-4 h-4 text-yellow-400 animate-pulse" /> : <Terminal className="w-4 h-4 text-green-500" />}
+                    <span className="text-xs font-mono uppercase tracking-widest text-gray-400">
+                      {isSimulating ? "Compiling..." : "Live Environment"}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-gray-600 font-mono">OS v2.4.0</div>
+                </div>
+
+                <div className="p-6 space-y-8">
+
+                  {/* Metrics */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <MetricBox label="Traffic" value={step > 1 ? "Active" : "..."} active={step > 1} />
+                    <MetricBox label="Qual. Leads" value={step > 2 ? "Tracking" : "..."} active={step > 2} />
+                    <MetricBox label="Revenue" value={step > 3 ? "Projected" : "..."} active={step > 3} />
+                  </div>
+
+                  {/* System Stack Status */}
+                  <div className="space-y-3">
+                    <h4 className="text-xs text-gray-500 font-mono uppercase tracking-widest mb-2 flex justify-between">
+                      <span>System Stack</span>
+                      <span className="text-gray-600">STATE</span>
+                    </h4>
+                    <SystemToggle label="Growth Website" status={getSystemStatus("Growth Website")} active={["ACTIVE", "READY", "SCANNING"].includes(getSystemStatus("Growth Website"))} />
+                    <SystemToggle label="Lead Automation" status={getSystemStatus("Lead Automation")} active={["ACTIVE", "READY", "CALIBRATING"].includes(getSystemStatus("Lead Automation"))} color="purple" />
+                    <SystemToggle label="Scale System" status={getSystemStatus("Scale System")} active={["ACTIVE", "SCANNING"].includes(getSystemStatus("Scale System"))} color="green" />
+                    <SystemToggle label="Retention Loops" status={getSystemStatus("Retention Loops")} active={["ACTIVE", "READY"].includes(getSystemStatus("Retention Loops"))} color="orange" />
+                  </div>
+
+                  {/* Dynamic Insight Panel */}
+                  <div className="bg-blue-900/10 border border-blue-500/20 p-4 rounded-xl">
+                    <div className="flex items-center gap-2 mb-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                      <Zap className="w-3 h-3" /> System Insight
+                    </div>
+                    <p className="text-sm text-blue-100 leading-relaxed font-light min-h-[60px]">
+                      {step === 5 && blueprint ? blueprint.insight : (
+                        <>
+                          {step === 1 && !selections.businessContext && "Different businesses require different growth foundations."}
+                          {step === 1 && selections.businessContext && `Analysis: ${BUSINESS_CONTEXTS.find(c => c.id === selections.businessContext)?.title} models require specific conversion infrastructure.`}
+
+                          {step === 2 && !selections.growthStage && "Systems must evolve to match traffic volume."}
+                          {step === 2 && selections.growthStage === 'early' && "Early Stage: Priority shift to Validation and Traffic."}
+                          {step === 2 && selections.growthStage === 'growth' && "Growth Stage: Priority shift to Capture and Nurture."}
+                          {step === 2 && selections.growthStage === 'scaling' && "Scaling Stage: Priority shift to Optimization and Automation."}
+
+                          {step === 3 && "Budget allocations determine system complexity and ad-spend capability."}
+                          {step === 4 && "Aligning all systems to a single primary objective prevents conflict."}
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Simulation Overlay */}
+                {isSimulating && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-black/95 backdrop-blur-md flex flex-col items-start justify-center p-8 z-50 font-mono text-sm"
+                  >
+                    <div className="space-y-4 w-full">
+                      {logs.map((log, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="text-green-400 border-l-2 border-green-500 pl-3"
+                        >
+                          <span className="text-gray-500 mr-2">{`>`}</span>
+                          {log}
+                        </motion.div>
+                      ))}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ repeat: Infinity, duration: 0.8 }}
+                        className="w-3 h-5 bg-green-500 ml-4 mt-2"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -453,18 +616,49 @@ export default function GrowthGenerator() {
   );
 }
 
-function ResultSection({ title, items }: { title: string; items: string[] }) {
+// --- SUB-COMPONENTS ---
+
+function StepContainer({ step, title, subtext, children }: { step: number, title: string, subtext: string, children: React.ReactNode }) {
   return (
-    <div>
-      <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">{title}</h4>
-      <ul className="space-y-2">
-        {items.map((item, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <CheckCircle2 className="w-5 h-5 text-white shrink-0 mt-0.5" />
-            <span className="text-gray-300 text-sm leading-relaxed">{item}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="mb-6">
+        <div className="text-blue-500 font-bold mb-2 uppercase tracking-widest text-sm">Step {step} of 4</div>
+        <h2 className="text-3xl md:text-4xl font-display font-bold mb-3">{title}</h2>
+        <p className="text-xl text-gray-400">{subtext}</p>
+      </div>
+      {children}
+    </motion.div>
   );
+}
+
+function MetricBox({ label, value, active }: { label: string, value: string, active: boolean }) {
+  return (
+    <div className={`p-3 rounded-lg border text-center transition-colors ${active ? "bg-white/5 border-white/10" : "bg-transparent border-white/5 opacity-50"}`}>
+      <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{label}</div>
+      <div className={`font-mono text-sm ${active ? "text-white" : "text-gray-600"}`}>{value}</div>
+    </div>
+  )
+}
+
+function SystemToggle({ label, status, active, color = "blue" }: { label: string, status: SystemStatus, active: boolean, color?: string }) {
+
+  let statusColor = "text-gray-500";
+  if (status === "ACTIVE") statusColor = `text-${color}-400`;
+  if (status === "LOCKED") statusColor = "text-red-500/50";
+  if (status === "SCANNING") statusColor = "text-yellow-400";
+
+  return (
+    <div className={`flex items-center justify-between p-3 rounded-lg border transition-all ${active ? "bg-white/5 border-white/10" : "bg-transparent border-white/5 opacity-40"}`}>
+      <span className="font-medium text-sm">{label}</span>
+      <div className="flex items-center gap-2">
+        <span className={`text-[10px] font-mono uppercase ${statusColor}`}>{status}</span>
+        <div className={`w-2 h-2 rounded-full ${active ? `bg-${color}-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]` : "bg-gray-800"}`} />
+      </div>
+    </div>
+  )
 }
