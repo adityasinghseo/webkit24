@@ -311,16 +311,19 @@ export default function GrowthGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
+    <div className="min-h-screen bg-white text-gray-900 selection:bg-blue-100 selection:text-blue-900">
       <Navbar />
 
       <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
 
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">Build Your Growth OS</h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-2">Assemble the systems your business needs to grow — in the right order.</p>
-          <p className="text-xs font-mono text-gray-600 uppercase tracking-widest">This is not a template. This is system architecture.</p>
+          <h1 className="text-4xl md:text-5xl font-display font-semibold mb-4 tracking-tight text-gray-900">Build Your Growth OS</h1>
+          <p className="text-xl text-gray-500 max-w-2xl mx-auto mb-2">Assemble the systems your business needs to grow — in the right order.</p>
+          <div className="flex items-center justify-center gap-2 mt-4 text-xs font-mono text-gray-400 uppercase tracking-widest">
+            <span className="w-2 h-2 rounded-full bg-blue-500/50"></span>
+            System Architecture Mode
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
@@ -338,8 +341,15 @@ export default function GrowthGenerator() {
                       <div
                         key={ctx.id}
                         onClick={() => handleSelect("businessContext", ctx.id)}
-                        className={`p-6 rounded-xl border cursor-pointer transition-all hover:border-blue-500/50 hover:bg-white/5 ${selections.businessContext === ctx.id ? "bg-blue-900/10 border-blue-500 ring-1 ring-blue-500" : "bg-white/5 border-white/10"}`}
+                        className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 relative overflow-hidden group
+                          ${selections.businessContext === ctx.id
+                            ? "bg-gradient-to-b from-blue-50/50 to-white border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                            : "bg-white border-gray-100 hover:border-blue-200 hover:bg-blue-50/30"
+                          }`}
                       >
+                        {selections.businessContext === ctx.id && (
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
+                        )}
                         <div className="mb-3">{ctx.icon}</div>
                         <h3 className="font-bold mb-1">{ctx.title}</h3>
                         <p className="text-sm text-gray-400">{ctx.desc}</p>
@@ -357,11 +367,18 @@ export default function GrowthGenerator() {
                       <div
                         key={stage.id}
                         onClick={() => handleSelect("growthStage", stage.id)}
-                        className={`p-6 rounded-xl border cursor-pointer transition-all hover:bg-white/5 flex items-center justify-between ${selections.growthStage === stage.id ? "bg-blue-900/10 border-blue-500" : "bg-white/5 border-white/10"}`}
+                        className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between relative overflow-hidden
+                          ${selections.growthStage === stage.id
+                            ? "bg-gradient-to-b from-blue-50/50 to-white border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                            : "bg-white border-gray-100 hover:border-blue-200 hover:bg-blue-50/30"
+                          }`}
                       >
+                        {selections.growthStage === stage.id && (
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
+                        )}
                         <div>
                           <h3 className="font-bold text-lg">{stage.title}</h3>
-                          <p className="text-gray-400">{stage.desc}</p>
+                          <p className="text-gray-500">{stage.desc}</p>
                         </div>
                         {selections.growthStage === stage.id && <CheckCircle2 className="text-blue-500" />}
                       </div>
@@ -379,8 +396,15 @@ export default function GrowthGenerator() {
                       <div
                         key={budget.id}
                         onClick={() => handleSelect("budget", budget.id)}
-                        className={`p-6 rounded-xl border cursor-pointer transition-all text-center hover:bg-white/5 ${selections.budget === budget.id ? "bg-blue-900/10 border-blue-500" : "bg-white/5 border-white/10"}`}
+                        className={`p-6 rounded-xl border-2 cursor-pointer transition-all text-center relative overflow-hidden
+                           ${selections.budget === budget.id
+                            ? "bg-gradient-to-b from-blue-50/50 to-white border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                            : "bg-white border-gray-100 hover:border-blue-200 hover:bg-blue-50/30"
+                          }`}
                       >
+                        {selections.budget === budget.id && (
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
+                        )}
                         <h3 className="font-bold text-xl mb-1">{budget.title}</h3>
                         <p className="text-xs text-gray-500 uppercase tracking-widest">{budget.desc}</p>
                       </div>
@@ -398,8 +422,15 @@ export default function GrowthGenerator() {
                       <div
                         key={goal.id}
                         onClick={() => handleSelect("primaryGoal", goal.id)}
-                        className={`p-5 rounded-xl border cursor-pointer transition-all hover:border-blue-500/30 ${selections.primaryGoal === goal.id ? "bg-blue-900/10 border-blue-500" : "bg-white/5 border-white/10"}`}
+                        className={`p-5 rounded-xl border-2 cursor-pointer transition-all relative overflow-hidden
+                          ${selections.primaryGoal === goal.id
+                            ? "bg-gradient-to-b from-blue-50/50 to-white border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                            : "bg-white border-gray-100 hover:border-blue-200 hover:bg-blue-50/30"
+                          }`}
                       >
+                        {selections.primaryGoal === goal.id && (
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
+                        )}
                         <h3 className="font-bold text-center">{goal.title}</h3>
                       </div>
                     ))}
@@ -415,40 +446,40 @@ export default function GrowthGenerator() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="space-y-8"
                 >
-                  <div className="p-8 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/20 shadow-2xl relative overflow-hidden group">
+                  <div className="p-8 rounded-2xl bg-white border border-gray-200 shadow-2xl shadow-gray-200/50 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4">
-                      <div className="px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/50 text-blue-300 text-xs font-mono uppercase tracking-widest">
+                      <div className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-mono uppercase tracking-widest">
                         Blueprint Ready
                       </div>
                     </div>
 
-                    <h2 className="text-3xl font-display font-bold mb-8">Your Growth OS Blueprint</h2>
+                    <h2 className="text-3xl font-display font-bold mb-8 text-gray-900">Your Growth OS Blueprint</h2>
 
                     <div className="space-y-8 relative z-10">
                       {/* Core System */}
                       <div>
-                        <h3 className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-3">Core System (Priority #1)</h3>
-                        <div className={`p-6 rounded-xl bg-${blueprint.coreSystem.color}-900/20 border border-${blueprint.coreSystem.color}-500/30 flex items-center justify-between`}>
+                        <h3 className="text-xs font-mono text-gray-400 uppercase tracking-widest mb-3">Core System (Priority #1)</h3>
+                        <div className={`p-6 rounded-xl bg-${blueprint.coreSystem.color}-50 border border-${blueprint.coreSystem.color}-200 flex items-center justify-between shadow-sm`}>
                           <div className="flex items-center gap-4">
-                            <div className={`w-2 h-16 bg-${blueprint.coreSystem.color}-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)]`} />
+                            <div className={`w-2 h-16 bg-${blueprint.coreSystem.color}-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.3)]`} />
                             <div>
-                              <div className="font-bold text-2xl mb-1">{blueprint.coreSystem.name}</div>
-                              <div className="text-sm text-gray-300">{blueprint.coreSystem.desc}</div>
+                              <div className="font-bold text-2xl mb-1 text-gray-900">{blueprint.coreSystem.name}</div>
+                              <div className="text-sm text-gray-600">{blueprint.coreSystem.desc}</div>
                             </div>
                           </div>
-                          <CheckCircle2 className={`text-${blueprint.coreSystem.color}-500 w-8 h-8`} />
+                          <CheckCircle2 className={`text-${blueprint.coreSystem.color}-600 w-8 h-8`} />
                         </div>
                       </div>
 
                       {/* Supporting Systems */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {blueprint.supportingSystems.map((sys, i) => (
-                          <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                          <div key={i} className="p-4 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors shadow-sm">
                             <div className="flex justify-between items-start mb-2">
-                              <div className="font-bold">{sys.name}</div>
-                              <div className="text-[10px] px-2 py-0.5 rounded bg-white/10 text-gray-400">SUPPORT</div>
+                              <div className="font-bold text-gray-900">{sys.name}</div>
+                              <div className="text-[10px] px-2 py-0.5 rounded bg-gray-200 text-gray-500">SUPPORT</div>
                             </div>
-                            <div className="text-xs text-gray-400">{sys.desc}</div>
+                            <div className="text-xs text-gray-500">{sys.desc}</div>
                           </div>
                         ))}
                       </div>
@@ -456,11 +487,11 @@ export default function GrowthGenerator() {
                       {/* Deferred Systems */}
                       {blueprint.deferredSystems.length > 0 && (
                         <div>
-                          <h3 className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-3">Deferred Systems (Inactive)</h3>
+                          <h3 className="text-xs font-mono text-gray-400 uppercase tracking-widest mb-3">Deferred Systems (Inactive)</h3>
                           <div className="space-y-2">
                             {blueprint.deferredSystems.map((sys, i) => (
-                              <div key={i} className="flex items-center gap-3 text-gray-500 p-3 rounded-lg border border-dashed border-white/10 bg-black/20">
-                                <Lock className="w-4 h-4" />
+                              <div key={i} className="flex items-center gap-3 text-gray-500 p-3 rounded-lg border border-dashed border-gray-200 bg-gray-50/50">
+                                <Lock className="w-4 h-4 text-gray-400" />
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
                                   <span className="text-sm font-medium">{sys.name}</span>
                                   <span className="text-xs opacity-70">Reason: {sys.reason}</span>
@@ -474,7 +505,7 @@ export default function GrowthGenerator() {
                   </div>
 
                   <div className="text-center space-y-4">
-                    <div className="inline-block p-1 rounded-full bg-gradient-to-r from-white/20 to-white/5 mb-4">
+                    <div className="inline-block p-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-50 mb-4 shadow-sm">
                       <Button
                         size="lg"
                         variant="premium"
@@ -487,7 +518,7 @@ export default function GrowthGenerator() {
                     </div>
                     <div>
                       <Link href="/ideas">
-                        <Button variant="link" className="text-gray-400 hover:text-white">
+                        <Button variant="link" className="text-gray-500 hover:text-gray-900">
                           Diagnose My Current System <ArrowRight className="w-4 h-4 ml-1" />
                         </Button>
                       </Link>
@@ -506,7 +537,7 @@ export default function GrowthGenerator() {
                   size="lg"
                   onClick={handleNext}
                   disabled={!canProceed()}
-                  className={`${canProceed() ? "bg-white text-black hover:bg-gray-200" : "bg-white/10 text-gray-500 cursor-not-allowed"}`}
+                  className={`${canProceed() ? "bg-gray-900 text-white hover:bg-gray-800 shadow-xl shadow-gray-900/10" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
                 >
                   {step === 4 ? "Assemble System" : "Next Step"}
                   {step !== 4 && <ChevronRight className="w-4 h-4 ml-2" />}
@@ -518,16 +549,23 @@ export default function GrowthGenerator() {
           {/* RIGHT PANEL - LIVE SIMULATION */}
           <div className="lg:col-span-5 relative hidden lg:block">
             <div className="sticky top-32">
-              <div className="glass-card rounded-2xl border-white/10 overflow-hidden shadow-2xl">
+              <div className="rounded-3xl border border-blue-100/50 overflow-hidden shadow-[0_20px_60px_rgba(15,23,42,0.08)] bg-gradient-to-b from-white to-gray-50 relative">
+
+                {/* Grid Background */}
+                <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_right,#3b82f61a_1px,transparent_1px),linear-gradient(to_bottom,#3b82f61a_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-50" />
+
                 {/* Header */}
-                <div className="bg-white/5 border-b border-white/10 p-4 flex items-center justify-between">
+                <div className="bg-white/50 backdrop-blur-sm border-b border-gray-200/50 p-4 flex items-center justify-between relative z-10">
                   <div className="flex items-center gap-2">
-                    {isSimulating ? <Activity className="w-4 h-4 text-yellow-400 animate-pulse" /> : <Terminal className="w-4 h-4 text-green-500" />}
-                    <span className="text-xs font-mono uppercase tracking-widest text-gray-400">
+                    <div className="relative flex h-2.5 w-2.5">
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isSimulating ? "bg-yellow-400" : "bg-green-500"}`}></span>
+                      <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isSimulating ? "bg-yellow-500" : "bg-green-500"}`}></span>
+                    </div>
+                    <span className="text-xs font-mono uppercase tracking-widest text-gray-500 font-medium">
                       {isSimulating ? "Compiling..." : "Live Environment"}
                     </span>
                   </div>
-                  <div className="text-[10px] text-gray-600 font-mono">OS v2.4.0</div>
+                  <div className="text-[10px] text-gray-400 font-mono border border-gray-200 px-2 py-0.5 rounded">OS v2.4.0</div>
                 </div>
 
                 <div className="p-6 space-y-8">
@@ -541,9 +579,9 @@ export default function GrowthGenerator() {
 
                   {/* System Stack Status */}
                   <div className="space-y-3">
-                    <h4 className="text-xs text-gray-500 font-mono uppercase tracking-widest mb-2 flex justify-between">
+                    <h4 className="text-xs text-gray-400 font-mono uppercase tracking-widest mb-2 flex justify-between">
                       <span>System Stack</span>
-                      <span className="text-gray-600">STATE</span>
+                      <span className="text-gray-400">STATE</span>
                     </h4>
                     <SystemToggle label="Growth Website" status={getSystemStatus("Growth Website")} active={["ACTIVE", "READY", "SCANNING"].includes(getSystemStatus("Growth Website"))} />
                     <SystemToggle label="Lead Automation" status={getSystemStatus("Lead Automation")} active={["ACTIVE", "READY", "CALIBRATING"].includes(getSystemStatus("Lead Automation"))} color="purple" />
@@ -552,11 +590,11 @@ export default function GrowthGenerator() {
                   </div>
 
                   {/* Dynamic Insight Panel */}
-                  <div className="bg-blue-900/10 border border-blue-500/20 p-4 rounded-xl">
-                    <div className="flex items-center gap-2 mb-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                  <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl">
+                    <div className="flex items-center gap-2 mb-2 text-blue-700 text-xs font-bold uppercase tracking-wider">
                       <Zap className="w-3 h-3" /> System Insight
                     </div>
-                    <p className="text-sm text-blue-100 leading-relaxed font-light min-h-[60px]">
+                    <p className="text-sm text-blue-800 leading-relaxed font-light min-h-[60px]">
                       {step === 5 && blueprint ? blueprint.insight : (
                         <>
                           {step === 1 && !selections.businessContext && "Different businesses require different growth foundations."}
@@ -581,7 +619,7 @@ export default function GrowthGenerator() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-black/95 backdrop-blur-md flex flex-col items-start justify-center p-8 z-50 font-mono text-sm"
+                    className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-start justify-center p-8 z-50 font-mono text-sm"
                   >
                     <div className="space-y-4 w-full">
                       {logs.map((log, i) => (
@@ -589,9 +627,9 @@ export default function GrowthGenerator() {
                           key={i}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className="text-green-400 border-l-2 border-green-500 pl-3"
+                          className="text-green-600 border-l-2 border-green-500 pl-3"
                         >
-                          <span className="text-gray-500 mr-2">{`>`}</span>
+                          <span className="text-gray-400 mr-2">{`>`}</span>
                           {log}
                         </motion.div>
                       ))}
@@ -611,6 +649,7 @@ export default function GrowthGenerator() {
         </div>
       </div>
 
+      <div className="h-32 bg-gradient-to-b from-white to-gray-50 w-full" />
       <Footer />
     </div>
   );
@@ -625,11 +664,19 @@ function StepContainer({ step, title, subtext, children }: { step: number, title
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3 }}
+      className="bg-white border border-gray-100 rounded-3xl p-8 shadow-xl shadow-gray-200/40 relative overflow-hidden"
     >
-      <div className="mb-6">
-        <div className="text-blue-500 font-bold mb-2 uppercase tracking-widest text-sm">Step {step} of 4</div>
-        <h2 className="text-3xl md:text-4xl font-display font-bold mb-3">{title}</h2>
-        <p className="text-xl text-gray-400">{subtext}</p>
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-blue-600 font-bold uppercase tracking-widest text-xs">Step {step} of 4</div>
+          <div className="flex gap-1">
+            {[1, 2, 3, 4].map(s => (
+              <div key={s} className={`h-1.5 w-8 rounded-full transition-all ${s <= step ? "bg-blue-600" : "bg-gray-100"}`} />
+            ))}
+          </div>
+        </div>
+        <h2 className="text-3xl md:text-3xl font-display font-semibold mb-3 text-gray-900">{title}</h2>
+        <p className="text-lg text-gray-500">{subtext}</p>
       </div>
       {children}
     </motion.div>
@@ -638,26 +685,26 @@ function StepContainer({ step, title, subtext, children }: { step: number, title
 
 function MetricBox({ label, value, active }: { label: string, value: string, active: boolean }) {
   return (
-    <div className={`p-3 rounded-lg border text-center transition-colors ${active ? "bg-white/5 border-white/10" : "bg-transparent border-white/5 opacity-50"}`}>
-      <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{label}</div>
-      <div className={`font-mono text-sm ${active ? "text-white" : "text-gray-600"}`}>{value}</div>
+    <div className={`p-3 rounded-xl border text-center transition-colors ${active ? "bg-white border-blue-100 shadow-sm" : "bg-gray-50/50 border-gray-100 opacity-60"}`}>
+      <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-1 font-semibold">{label}</div>
+      <div className={`font-mono text-sm ${active ? "text-blue-600 font-bold" : "text-gray-400"}`}>{value}</div>
     </div>
   )
 }
 
 function SystemToggle({ label, status, active, color = "blue" }: { label: string, status: SystemStatus, active: boolean, color?: string }) {
 
-  let statusColor = "text-gray-500";
-  if (status === "ACTIVE") statusColor = `text-${color}-400`;
-  if (status === "LOCKED") statusColor = "text-red-500/50";
-  if (status === "SCANNING") statusColor = "text-yellow-400";
+  let statusColor = "text-gray-400";
+  if (status === "ACTIVE") statusColor = `text-${color}-600`;
+  if (status === "LOCKED") statusColor = "text-gray-400";
+  if (status === "SCANNING") statusColor = "text-yellow-600";
 
   return (
-    <div className={`flex items-center justify-between p-3 rounded-lg border transition-all ${active ? "bg-white/5 border-white/10" : "bg-transparent border-white/5 opacity-40"}`}>
-      <span className="font-medium text-sm">{label}</span>
+    <div className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-300 ${active ? "bg-white border-blue-100 shadow-md shadow-blue-500/5 scale-[1.02]" : "bg-transparent border-transparent opacity-60"}`}>
+      <span className={`font-medium text-sm ${active ? "text-gray-900 font-bold" : "text-gray-500"}`}>{label}</span>
       <div className="flex items-center gap-2">
-        <span className={`text-[10px] font-mono uppercase ${statusColor}`}>{status}</span>
-        <div className={`w-2 h-2 rounded-full ${active ? `bg-${color}-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]` : "bg-gray-800"}`} />
+        <span className={`text-[10px] font-mono uppercase tracking-wider ${statusColor} ${active ? "font-bold" : ""}`}>{status}</span>
+        <div className={`w-2 h-2 rounded-full ${active ? `bg-${color}-500 shadow-[0_0_8px_rgba(59,130,246,0.3)]` : "bg-gray-300"}`} />
       </div>
     </div>
   )

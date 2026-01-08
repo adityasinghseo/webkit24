@@ -69,22 +69,22 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
 
     return (
         <div className="w-full max-w-5xl mx-auto p-4 md:p-8">
-            <div className="glass-card rounded-3xl border border-white/10 p-1 bg-black/50 backdrop-blur-xl overflow-hidden relative">
+            <div className="glass-card rounded-3xl border border-gray-200 p-1 bg-white/80 backdrop-blur-xl overflow-hidden relative shadow-2xl shadow-blue-900/5">
                 {/* Background Grid */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
                 <div className="relative z-10 p-6 md:p-10 flex flex-col items-center">
 
                     {/* Header & Controls */}
                     <div className="text-center mb-8 max-w-2xl w-full">
-                        <h2 className="text-3xl font-display font-bold text-white mb-2">Simulate Your Growth Engine</h2>
+                        <h2 className="text-3xl font-display font-bold text-gray-900 mb-2">Simulate Your Growth Engine</h2>
 
                         <div className="flex items-center justify-center gap-4 mt-6 mb-4">
-                            <span className={`text-sm ${!isAutomated ? "text-red-400 font-bold" : "text-gray-500"}`}>Manual Chaos</span>
+                            <span className={`text-sm ${!isAutomated ? "text-red-500 font-bold" : "text-gray-400"}`}>Manual Chaos</span>
                             <Switch checked={isAutomated} onCheckedChange={onToggle} disabled={stage === "running"} />
-                            <span className={`text-sm ${isAutomated ? "text-green-400 font-bold" : "text-gray-500"}`}>Webkit24 System</span>
+                            <span className={`text-sm ${isAutomated ? "text-green-600 font-bold" : "text-gray-400"}`}>Webkit24 System</span>
                         </div>
-                        <p className="text-gray-400 text-xs">
+                        <p className="text-gray-500 text-xs">
                             {isAutomated ? "Simulating: AI Agents + CRM + Automated Follow-ups" : "Simulating: No Systems, Reliance on Luck"}
                         </p>
                     </div>
@@ -92,14 +92,14 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
                     {/* Visualization Flow */}
                     <div className="w-full grid grid-cols-3 gap-3 md:gap-8 mb-8 relative">
                         {/* Connector Lines */}
-                        <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-white/10 -translate-y-1/2 z-0" />
+                        <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 -translate-y-1/2 z-0" />
 
                         <Node
                             icon={<Users />}
                             label="Traffic"
                             value={metrics.visitors}
                             active={stage !== "idle"}
-                            color="text-blue-400"
+                            color="text-blue-600"
                             idleAnimation={{ scale: [1, 1.05, 1], opacity: [0.8, 1, 0.8] }}
                             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                         />
@@ -109,7 +109,7 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
                             label="Qualified Leads"
                             value={metrics.leads}
                             active={stage !== "idle" && metrics.visitors > 100}
-                            color={isAutomated ? "text-purple-400" : "text-red-400"}
+                            color={isAutomated ? "text-purple-600" : "text-red-500"}
                             warning={!isAutomated}
                             idleAnimation={{ y: [0, -4, 0] }}
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
@@ -120,7 +120,7 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
                             label="Revenue"
                             value={`$${metrics.sales * 100}`}
                             active={stage !== "idle" && metrics.leads > 5}
-                            color={isAutomated ? "text-green-400" : "text-red-400"}
+                            color={isAutomated ? "text-green-600" : "text-red-500"}
                             idleAnimation={{ opacity: [0.5, 1, 0.5] }}
                             transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 5 }}
                         />
@@ -128,15 +128,15 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
 
                     {/* Live System Feed */}
                     {stage !== 'idle' && (
-                        <div className="w-full max-w-lg mb-8 h-32 bg-black/40 rounded-xl border border-white/5 p-4 overflow-y-auto relative" ref={scrollRef}>
-                            <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-2 sticky top-0 bg-black/0 backdrop-blur-sm">System Events</div>
+                        <div className="w-full max-w-lg mb-8 h-32 bg-gray-50 rounded-xl border border-gray-200 p-4 overflow-y-auto relative" ref={scrollRef}>
+                            <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-2 sticky top-0 bg-gray-50/90 backdrop-blur-sm">System Events</div>
                             <AnimatePresence>
                                 {logs.map((log) => (
                                     <motion.div
                                         key={log.id}
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        className={`flex items-center gap-2 text-xs mb-2 ${log.type === 'success' ? 'text-green-400' : log.type === 'error' ? 'text-red-400' : 'text-gray-400'}`}
+                                        className={`flex items-center gap-2 text-xs mb-2 ${log.type === 'success' ? 'text-green-600' : log.type === 'error' ? 'text-red-500' : 'text-gray-500'}`}
                                     >
                                         {log.type === 'success' && <CheckCircle2 className="w-3 h-3" />}
                                         {log.type === 'error' && <XCircle className="w-3 h-3" />}
@@ -158,7 +158,7 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
                                 >
                                     <Button
                                         size="lg"
-                                        className={`h-14 px-8 text-lg hover:scale-105 transition-transform ${isAutomated ? "bg-white text-black hover:bg-gray-200" : "bg-red-900/20 text-red-200 border border-red-900/50 hover:bg-red-900/40"}`}
+                                        className={`h-14 px-8 text-lg hover:scale-105 transition-transform ${isAutomated ? "bg-black text-white hover:bg-gray-800" : "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100"}`}
                                         onClick={() => setStage("running")}
                                     >
                                         <Zap className="mr-2 w-5 h-5" /> Launch Simulation
@@ -171,10 +171,10 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10"
+                                    className="flex items-center gap-3 px-6 py-3 rounded-full bg-blue-50 border border-blue-100"
                                 >
-                                    <BarChart3 className="w-5 h-5 text-white animate-spin" />
-                                    <span className="text-sm font-mono text-gray-300">PROCESSING DATA...</span>
+                                    <BarChart3 className="w-5 h-5 text-blue-600 animate-spin" />
+                                    <span className="text-sm font-mono text-blue-800">PROCESSING DATA...</span>
                                 </motion.div>
                             )}
 
@@ -186,15 +186,15 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
                                 >
                                     {isAutomated ? (
                                         <>
-                                            <div className="mb-2 text-green-400 font-mono text-sm font-bold">System Performance: EXCELLENT</div>
-                                            <p className="text-gray-400 text-xs mb-6 max-w-md mx-auto">
+                                            <div className="mb-2 text-green-600 font-mono text-sm font-bold">System Performance: EXCELLENT</div>
+                                            <p className="text-gray-600 text-xs mb-6 max-w-md mx-auto">
                                                 Achieving this requires coordinated systems across marketing, automation, design, and software.
                                             </p>
                                         </>
                                     ) : (
                                         <>
-                                            <div className="mb-2 text-red-400 font-mono text-sm font-bold">System Performance: CRITICAL FAILURE</div>
-                                            <p className="text-red-300/70 text-xs mb-6 max-w-md mx-auto">
+                                            <div className="mb-2 text-red-600 font-mono text-sm font-bold">System Performance: CRITICAL FAILURE</div>
+                                            <p className="text-red-500 text-xs mb-6 max-w-md mx-auto">
                                                 Traffic without systems leaks money. You just paid for 1000 visitors and lost 98% of them.
                                             </p>
                                         </>
@@ -202,7 +202,7 @@ export function GrowthSimulator({ isAutomated, onToggle }: GrowthSimulatorProps)
 
                                     <div className="flex gap-4 justify-center">
                                         <Button variant="outline" onClick={reset}>Replay</Button>
-                                        <Button className="bg-white text-black hover:bg-gray-200" onClick={() => window.open('https://calendly.com/', '_blank')}>
+                                        <Button className="bg-black text-white hover:bg-gray-800" onClick={() => window.open('https://calendly.com/', '_blank')}>
                                             {isAutomated ? "Build This System For Real" : "Stop Losing Money"}
                                         </Button>
                                     </div>
@@ -262,16 +262,16 @@ function Node({ icon, label, value, active, color, warning, idleAnimation, trans
             <motion.div
                 animate={active ? {
                     scale: 1.1,
-                    borderColor: warning ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.5)",
-                    boxShadow: warning ? "0 0 30px rgba(239,68,68,0.2)" : "0 0 30px rgba(255,255,255,0.1)",
+                    borderColor: warning ? "rgba(239,68,68,0.5)" : "rgba(59,130,246,0.5)",
+                    boxShadow: warning ? "0 0 30px rgba(239,68,68,0.2)" : "0 0 30px rgba(59,130,246,0.3)", // Blue glow
                     y: 0, opacity: 1
                 } : (idleAnimation || {
                     scale: 1,
-                    borderColor: "rgba(255,255,255,0.1)",
+                    borderColor: "rgba(0,0,0,0.1)",
                     boxShadow: "none"
                 })}
                 transition={active ? { duration: 0.5 } : (transition || { duration: 0.5 })}
-                className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl bg-black border border-white/10 flex items-center justify-center mb-2 md:mb-4 transition-colors duration-500`}
+                className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl bg-white border border-gray-200 flex items-center justify-center mb-2 md:mb-4 transition-colors duration-500`}
             >
                 <div className={`w-6 h-6 md:w-10 md:h-10 ${active ? color : "text-gray-600"} transition-colors duration-300`}>
                     {icon}
@@ -279,7 +279,7 @@ function Node({ icon, label, value, active, color, warning, idleAnimation, trans
             </motion.div>
             <div className="text-center">
                 <div className="text-gray-500 text-xs uppercase tracking-widest mb-1">{label}</div>
-                <div className={`text-lg md:text-2xl font-bold font-mono ${active ? (warning ? "text-red-400" : "text-white") : "text-gray-700"}`}>
+                <div className={`text-lg md:text-2xl font-bold font-mono ${active ? (warning ? "text-red-500" : "text-blue-600") : "text-gray-700"}`}>
                     {value}
                 </div>
             </div>

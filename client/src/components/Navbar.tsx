@@ -15,23 +15,21 @@ export function Navbar({ systemState }: { systemState?: "automated" | "manual" }
   };
 
   const getCtaText = () => {
-    if (systemState === "automated") return "Build My System";
-    if (systemState === "manual") return "Fix My Growth";
     return "Build My System";
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/10 transition-colors duration-500">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-gray-200 transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold font-display tracking-tighter text-white">
-          WEBKIT<span className="text-gray-500">24</span>
+        <Link href="/" className="text-2xl font-bold font-display tracking-tighter text-gray-900">
+          WEBKIT<span className="text-blue-600">24</span>
         </Link>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
           <NavLink href="/systems">Systems</NavLink>
           <NavLink href="/generator">Growth Plan</NavLink>
-          <NavLink href="/ideas">Idea Lab</NavLink>
+          <NavLink href="/ideas">Diagnose</NavLink>
           <Button
             variant={systemState ? "default" : "premium"}
             size="sm"
@@ -44,7 +42,7 @@ export function Navbar({ systemState }: { systemState?: "automated" | "manual" }
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-gray-900"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X /> : <Menu />}
@@ -58,12 +56,12 @@ export function Navbar({ systemState }: { systemState?: "automated" | "manual" }
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-black border-b border-white/10 overflow-hidden"
+            className="md:hidden bg-white border-b border-gray-200 overflow-hidden"
           >
             <div className="flex flex-col p-6 gap-4">
               <MobileNavLink href="/systems" onClick={() => setIsOpen(false)}>Systems</MobileNavLink>
               <MobileNavLink href="/generator" onClick={() => setIsOpen(false)}>Growth Plan</MobileNavLink>
-              <MobileNavLink href="/ideas" onClick={() => setIsOpen(false)}>Idea Lab</MobileNavLink>
+              <MobileNavLink href="/ideas" onClick={() => setIsOpen(false)}>Diagnose</MobileNavLink>
               <Button
                 variant={systemState ? "default" : "premium"}
                 className={`w-full mt-4 ${getCtaStyle()}`}
@@ -84,7 +82,7 @@ export function Navbar({ systemState }: { systemState?: "automated" | "manual" }
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="text-sm font-medium text-gray-400 hover:text-white transition-colors">
+    <Link href={href} className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
       {children}
     </Link>
   );
@@ -94,7 +92,7 @@ function MobileNavLink({ href, children, onClick }: { href: string; children: Re
   return (
     <Link
       href={href}
-      className="text-lg font-medium text-gray-300 hover:text-white block py-2"
+      className="text-lg font-medium text-gray-900 hover:text-blue-600 block py-2"
       onClick={onClick}
     >
       {children}

@@ -8,36 +8,36 @@
   --font-sans: 'Inter', sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
 
-  --background: 0 0% 0%;
-  /* Deep Black */
-  --foreground: 0 0% 100%;
-  /* White */
+  --background: 0 0% 100%;
+  /* Pure White */
+  --foreground: 0 0% 10%;
+  /* Deep Gray/Black */
 
-  --card: 0 0% 3%;
-  --card-foreground: 0 0% 100%;
+  --card: 0 0% 98%;
+  --card-foreground: 0 0% 10%;
 
-  --popover: 0 0% 3%;
-  --popover-foreground: 0 0% 100%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
 
-  --primary: 0 0% 100%;
-  --primary-foreground: 0 0% 0%;
+  --primary: 0 0% 10%;
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 0 0% 10%;
-  --secondary-foreground: 0 0% 100%;
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 10%;
 
-  --muted: 0 0% 10%;
-  --muted-foreground: 0 0% 60%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
 
-  --accent: 210 100% 50%;
-  /* Subtle tech blue for highlights */
+  --accent: 221 83% 53%;
+  /* Bright Blue (Webkit24 Blue) */
   --accent-foreground: 0 0% 100%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 0 0% 15%;
-  --input: 0 0% 15%;
-  --ring: 0 0% 100%;
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 221 83% 53%;
 
   --radius: 0.5rem;
 }
@@ -65,7 +65,7 @@
   }
 
   .glass-card {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10;
+    @apply bg-white/70 backdrop-blur-lg border border-gray-200 shadow-sm;
   }
 }
 

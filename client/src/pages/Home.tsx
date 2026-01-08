@@ -34,7 +34,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-background text-foreground selection:bg-blue-100 selection:text-blue-900">
       <Navbar systemState={isSystem ? "automated" : "manual"} />
 
       {/* Interactive Hero Section */}
@@ -42,7 +42,7 @@ export default function Home() {
         {/* Layer 1: Background Signal Grid - Refined & High Density */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Base Grid - Invisible paths (very faint) */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] opacity-10" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:40px_40px] opacity-20" />
 
           {/* High Density Signal Generation */}
           {/* We generate these deterministically to prevent hydration mismatches */}
@@ -79,7 +79,7 @@ export default function Home() {
             );
           })}
 
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent opacity-40" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-transparent to-transparent opacity-60" />
         </div>
 
         <div className="max-w-7xl mx-auto w-full relative z-10">
@@ -90,7 +90,7 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-block mb-4 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-gray-400"
+                className="inline-block mb-4 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-xs font-mono text-blue-600"
               >
                 Most businesses don’t have a growth problem. They have a system problem.
               </motion.div>
@@ -99,7 +99,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-5xl md:text-6xl lg:text-7xl font-bold font-display tracking-tighter mb-6 text-white leading-[1.1]"
+                className="text-5xl md:text-6xl lg:text-7xl font-bold font-display tracking-tighter mb-6 text-gray-900 leading-[1.1]"
               >
                 We don’t market.<br />
                 We build <span className="font-bold animate-text-shine">Growth OS.</span>
@@ -109,7 +109,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 mb-8 font-light leading-relaxed"
+                className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0 mb-8 font-light leading-relaxed"
               >
                 Stop relying on chaotic ads and manual tasks.
                 We engineer a self-regulating growth machine for your business.
@@ -155,16 +155,16 @@ export default function Home() {
       </section>
 
       {/* Living Systems Grid */}
-      <section className="py-24 bg-black border-t border-white/5">
+      <section className="py-24 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div>
               <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">The Webkit24 OS</h2>
               <div className="flex items-center gap-4">
-                <p className="text-gray-400 text-lg max-w-xl">
+                <p className="text-gray-500 text-lg max-w-xl">
                   Hover over a system to see how it works.
                 </p>
-                <div className="hidden md:flex px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-blue-400 tracking-wider">
+                <div className="hidden md:flex px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-xs font-mono text-blue-600 tracking-wider">
                   System Assembly Progress: {exploredLayers.size} of 5 layers active
                 </div>
               </div>
@@ -289,13 +289,13 @@ export default function Home() {
             />
 
             {/* CTA Card */}
-            <div className="bg-gradient-to-br from-white/10 to-transparent p-8 rounded-2xl flex flex-col items-center justify-center border border-white/10 group cursor-pointer hover:bg-white/5 transition-all text-center">
+            <div className="bg-gradient-to-br from-gray-50 to-white p-8 rounded-2xl flex flex-col items-center justify-center border border-gray-100 group cursor-pointer hover:shadow-lg transition-all text-center">
               <Link href="/generator" className="w-full h-full flex flex-col items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Zap className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Zap className="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 className="text-2xl font-bold mb-2">Assemble My Growth OS</h3>
-                <p className="text-gray-400 text-sm group-hover:text-white transition-colors">Start the Planner &rarr;</p>
+                <p className="text-gray-500 text-sm group-hover:text-blue-600 transition-colors">Start the Planner &rarr;</p>
               </Link>
             </div>
           </div>
@@ -303,19 +303,19 @@ export default function Home() {
       </section>
 
       {/* How It Works - System Flow */}
-      <section className="py-24 bg-black border-t border-white/5 relative overflow-hidden">
+      <section className="py-24 bg-gray-50/50 border-t border-gray-100 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
 
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">From Traffic to Revenue — Automatically</h2>
-            <p className="text-gray-400 text-lg uppercase tracking-widest font-mono text-sm">
+            <p className="text-gray-500 text-lg uppercase tracking-widest font-mono text-sm">
               A self-regulating growth engine that replaces manual work with connected systems.
             </p>
           </div>
 
           <SystemFlow />
 
-          <div className="mt-20 text-center border-t border-white/10 pt-16">
+          <div className="mt-20 text-center border-t border-gray-200 pt-16">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">
               This Isn’t a Template. It’s Built for Your Business.
             </h3>
@@ -330,7 +330,7 @@ export default function Home() {
                 </Button>
               </Link>
               <Link href="/ideas">
-                <Button variant="outline" size="lg" className="h-14 px-8 text-lg w-full sm:w-auto border-white/10 hover:bg-white/5">
+                <Button variant="outline" size="lg" className="h-14 px-8 text-lg w-full sm:w-auto border-gray-300 text-gray-700 hover:bg-gray-100">
                   Diagnose My Current System
                 </Button>
               </Link>

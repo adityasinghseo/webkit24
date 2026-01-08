@@ -8,27 +8,31 @@ import { useState } from "react";
 
 export default function Systems() {
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
+    <div className="min-h-screen bg-white text-gray-900 selection:bg-blue-100 selection:text-blue-900">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto text-center">
+      <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
+          className="max-w-3xl"
         >
-          <h1 className="text-5xl md:text-7xl font-display font-bold track-tighter mb-6">
+          <div className="text-sm font-mono text-gray-400 uppercase tracking-widest mb-4">
+            System Architecture
+          </div>
+          <h1 className="text-5xl md:text-7xl font-display font-bold track-tighter mb-6 text-gray-900 leading-[1.1]">
             Systems That Power <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">Your Growth OS</span>
+            <span className="text-blue-600">Your Growth OS</span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-xl text-gray-500 max-w-2xl mb-10 leading-relaxed">
             Each system solves a specific growth problem.
-            <br />
-            This page explains what they do, when you need them, and how they work together.
+            <br className="hidden md:block" />
+            Understand what to activate, what to defer, and how they stack.
           </p>
           <Link href="/ideas">
-            <Button size="lg" variant="premium" className="h-14 px-8 text-lg rounded-full shadow-lg shadow-blue-900/20">
+            <Button size="lg" variant="premium" className="h-14 px-8 text-lg rounded-full shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 transition-all">
               Diagnose My Current System <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </Link>
@@ -36,7 +40,7 @@ export default function Systems() {
       </section>
 
       {/* Intro Section */}
-      <section className="py-20 bg-white/5 border-y border-white/10">
+      <section className="py-20 bg-gray-50 border-y border-gray-100">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -44,13 +48,13 @@ export default function Systems() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display mb-6">Why Systems — Not Services</h2>
-            <div className="text-lg md:text-xl text-gray-300 space-y-6 leading-relaxed">
+            <h2 className="text-3xl md:text-4xl font-bold font-display mb-6 text-gray-900">Why Systems — Not Services</h2>
+            <div className="text-lg md:text-xl text-gray-600 space-y-6 leading-relaxed">
               <p>
                 Most businesses fail not because of bad marketing,
                 but because growth relies on disconnected tools and manual work.
               </p>
-              <p className="font-semibold text-white">
+              <p className="font-semibold text-gray-900">
                 Webkit24 replaces chaos with engineered systems —
                 designed to run together, scale together, and improve automatically.
               </p>
@@ -205,7 +209,7 @@ export default function Systems() {
       </div>
 
       {/* FINAL SECTION — ASSEMBLY */}
-      <section className="mt-32 py-32 bg-gradient-to-t from-blue-900/20 to-black border-t border-white/10">
+      <section className="mt-32 py-32 bg-zinc-950 text-white">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -236,7 +240,7 @@ export default function Systems() {
                 </Button>
               </Link>
               <Link href="/ideas">
-                <Button size="lg" variant="ghost" className="h-16 px-10 text-lg w-full sm:w-auto rounded-full border border-white/10 hover:bg-white/5">
+                <Button size="lg" variant="ghost" className="h-16 px-10 text-lg w-full sm:w-auto rounded-full border border-white/10 hover:bg-white/5 hover:text-white text-gray-300">
                   Diagnose My Current Setup <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
@@ -277,8 +281,8 @@ function SystemCard(props: SystemCardProps) {
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5 }}
       className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isExpanded
-          ? "bg-white/5 border-white/20 shadow-2xl"
-          : "bg-black border-white/10 hover:border-white/20"
+        ? "bg-[#F7FAFF] border-blue-200 shadow-xl shadow-blue-500/10 border-l-4 border-l-blue-500"
+        : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg"
         }`}
     >
       {/* Tier 1 & 2: Main visible content */}
@@ -287,7 +291,7 @@ function SystemCard(props: SystemCardProps) {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         {/* Icon */}
-        <div className={`w-12 h-12 md:w-16 md:h-16 rounded-xl flex items-center justify-center shrink-0 ${isExpanded ? `bg-${props.color}-500/20 text-${props.color}-400` : "bg-white/5 text-gray-400"
+        <div className={`w-12 h-12 md:w-16 md:h-16 rounded-xl flex items-center justify-center shrink-0 ${isExpanded ? `bg-${props.color}-50 text-${props.color}-600` : "bg-gray-50 text-gray-400"
           }`}>
           {props.icon}
         </div>
@@ -295,18 +299,18 @@ function SystemCard(props: SystemCardProps) {
         {/* Content Group */}
         <div className="flex-1">
           <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 mb-2">
-            <h3 className="text-2xl font-bold font-display text-white">{props.title}</h3>
+            <h3 className="text-2xl font-bold font-display text-gray-900">{props.title}</h3>
             <span className="text-sm font-mono text-gray-500 uppercase tracking-widest hidden md:inline-block">System {props.id}</span>
           </div>
 
-          <div className="mb-2 text-gray-300 font-medium">{props.subtitle}</div>
+          <div className="mb-2 text-gray-600 font-medium">{props.subtitle}</div>
           <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">{props.whatSolves}</p>
         </div>
 
         {/* Action / Indicator */}
         <div className="flex items-center justify-between md:justify-end gap-4 md:w-auto mt-4 md:mt-0">
-          <Button variant={isExpanded ? "default" : "outline"} className={`shrink-0 ${isExpanded ? "bg-white text-black hover:bg-gray-200" : "border-white/20 text-gray-400"}`}>
-            {isExpanded ? "Close Details" : "Explore System"}
+          <Button variant={isExpanded ? "default" : "outline"} className={`shrink-0 ${isExpanded ? "bg-blue-600 hover:bg-blue-700 border-none" : "border-gray-200 text-gray-500 hover:text-gray-900"}`}>
+            {isExpanded ? "Close Logic" : "View System Logic"}
           </Button>
         </div>
       </div>
@@ -319,18 +323,18 @@ function SystemCard(props: SystemCardProps) {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden bg-black/50 border-t border-white/5"
+            className="overflow-hidden bg-gray-50/50 border-t border-gray-100"
           >
             <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
 
               {/* Col 1 */}
               <div>
-                <h4 className="font-bold text-gray-300 mb-4 flex items-center gap-2 text-xs uppercase tracking-wider">
+                <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-xs uppercase tracking-wider">
                   What It Does
                 </h4>
                 <ul className="space-y-3">
                   {props.whatItDoes.map((item, i) => (
-                    <li key={i} className="flex items-start gap-3 text-gray-400">
+                    <li key={i} className="flex items-start gap-3 text-gray-600">
                       <span className={`w-1.5 h-1.5 rounded-full bg-${props.color}-500 mt-1.5`} />
                       <span>{item}</span>
                     </li>
@@ -340,12 +344,12 @@ function SystemCard(props: SystemCardProps) {
 
               {/* Col 2 */}
               <div>
-                <h4 className="font-bold text-gray-300 mb-4 flex items-center gap-2 text-xs uppercase tracking-wider">
+                <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-xs uppercase tracking-wider">
                   Who Needs This
                 </h4>
                 <ul className="space-y-3">
                   {props.whoNeedsThis.map((item, i) => (
-                    <li key={i} className="flex items-start gap-3 text-gray-500">
+                    <li key={i} className="flex items-start gap-3 text-gray-600">
                       <span className="w-1.5 h-1.5 rounded-full bg-gray-700 mt-1.5 shrink-0" />
                       <span>{item}</span>
                     </li>
@@ -356,13 +360,13 @@ function SystemCard(props: SystemCardProps) {
               {/* Col 3: Integrations & Outcome */}
               <div className="flex flex-col h-full justify-between">
                 <div>
-                  <h4 className="font-bold text-gray-300 mb-4 flex items-center gap-2 text-xs uppercase tracking-wider">
+                  <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-xs uppercase tracking-wider">
                     Integrates With
                   </h4>
                   <div className="flex items-center gap-2 mb-6">
                     {props.integratesWith.map((sys, i) => (
                       <div key={i} className="flex items-center gap-2">
-                        <div className="p-2 rounded bg-white/5 border border-white/10 text-xs text-gray-400 whitespace-nowrap" title={sys}>
+                        <div className="p-2 rounded bg-white border border-gray-200 text-xs text-gray-500 whitespace-nowrap" title={sys}>
                           {sys === "Growth Website" && <Globe className="w-3 h-3" />}
                           {sys === "Lead Automation" && <Bot className="w-3 h-3" />}
                           {sys === "Scale System" && <BarChart3 className="w-3 h-3" />}
@@ -376,10 +380,10 @@ function SystemCard(props: SystemCardProps) {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 mt-4">
+                <div className="pt-4 border-t border-gray-200 mt-4">
                   <Link href={props.ctaLink} className="block">
-                    <Button className="w-full bg-white text-black hover:bg-gray-200 group">
-                      {props.ctaText}
+                    <Button className="w-full bg-gray-900 text-white hover:bg-blue-600 transition-colors group">
+                      Include in My OS
                       <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>

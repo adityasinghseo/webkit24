@@ -26,7 +26,7 @@ export function BuilderSection() {
     ];
 
     return (
-        <section className="py-24 bg-zinc-900 border-t border-white/5">
+        <section className="py-32 bg-zinc-950 text-white">
             <div className="max-w-7xl mx-auto px-6">
 
                 {/* Header */}

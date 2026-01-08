@@ -95,7 +95,7 @@ export function SystemFlow() {
         <div className="w-full">
             {/* Top Label */}
             <div className="text-center mb-8">
-                <div className="inline-block px-3 py-1 mb-2 rounded border border-white/10 bg-white/5 text-xs font-mono text-blue-300 uppercase tracking-widest">
+                <div className="inline-block px-3 py-1 mb-2 rounded border border-blue-100 bg-blue-50 text-xs font-mono text-blue-700 uppercase tracking-widest">
                     The Webkit24 Growth OS
                 </div>
                 <p className="text-xs text-gray-500">Hover over each system to see how it works together.</p>
@@ -105,10 +105,10 @@ export function SystemFlow() {
             <div className="relative flex flex-col md:flex-row items-center justify-between mb-16 gap-4 md:gap-0">
 
                 {/* Connecting Line (Desktop) */}
-                <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-white/10 -translate-y-1/2 z-0">
+                <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 -translate-y-1/2 z-0">
                     {activeStep && (
                         <motion.div
-                            className="h-full bg-blue-500/50"
+                            className="h-full bg-blue-600"
                             layoutId="flow-line"
                             transition={{ duration: 0.5 }}
                             style={{
@@ -131,16 +131,16 @@ export function SystemFlow() {
                         >
                             <motion.div
                                 className={`w-16 h-16 rounded-2xl flex items-center justify-center border transition-all duration-300 ${isActive
-                                        ? "bg-black border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)] scale-110"
-                                        : isPast
-                                            ? "bg-blue-900/20 border-blue-500/30 text-blue-400"
-                                            : "bg-black border-white/10 text-gray-500 hover:border-white/30"
+                                    ? "bg-white border-blue-500 shadow-xl shadow-blue-500/20 scale-110"
+                                    : isPast
+                                        ? "bg-blue-50 border-blue-200 text-blue-600"
+                                        : "bg-white border-gray-200 text-gray-400 hover:border-blue-300 hover:shadow-lg"
                                     }`}
                                 whileHover={{ scale: 1.05 }}
                             >
-                                <step.icon className={`w-8 h-8 ${isActive ? "text-blue-400" : isPast ? "text-blue-400" : "text-gray-500"}`} />
+                                <step.icon className={`w-8 h-8 ${isActive ? "text-blue-600" : isPast ? "text-blue-600" : "text-gray-400"}`} />
                             </motion.div>
-                            <div className={`mt-4 text-sm font-mono uppercase tracking-wider transition-colors duration-300 ${isActive ? "text-white font-bold" : "text-gray-500"
+                            <div className={`mt-4 text-sm font-mono uppercase tracking-wider transition-colors duration-300 ${isActive ? "text-blue-700 font-bold" : "text-gray-400"
                                 }`}>
                                 {step.label}
                             </div>
@@ -158,7 +158,7 @@ export function SystemFlow() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
-                        className="w-full bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 overflow-hidden relative"
+                        className="w-full bg-white border border-gray-200 rounded-3xl p-8 md:p-12 overflow-hidden relative shadow-2xl shadow-gray-200/50"
                     >
                         {/* Background glow */}
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
@@ -167,11 +167,11 @@ export function SystemFlow() {
 
                             {/* Left Side: Info */}
                             <div>
-                                <h3 className="text-3xl font-display font-bold mb-6 text-white leading-tight">
+                                <h3 className="text-3xl font-display font-bold mb-6 text-gray-900 leading-tight">
                                     {content[activeStep || "default"].title}
                                 </h3>
 
-                                <p className="text-gray-300 text-lg leading-relaxed mb-8">
+                                <p className="text-gray-600 text-lg leading-relaxed mb-8">
                                     {content[activeStep || "default"].desc}
                                 </p>
 
@@ -180,20 +180,20 @@ export function SystemFlow() {
                                 ) : (activeStep && (
                                     <>
                                         <div className="mb-6">
-                                            <h4 className="text-xs font-mono text-blue-400 uppercase tracking-widest mb-3">What happens:</h4>
+                                            <h4 className="text-xs font-mono text-blue-600 uppercase tracking-widest mb-3">What happens:</h4>
                                             <div className="space-y-2">
                                                 {content[activeStep].whatHappens?.map((item, i) => (
-                                                    <div key={i} className="flex items-start gap-2 text-gray-300 text-sm">
-                                                        <Check className="w-4 h-4 text-blue-500 mt-0.5" />
+                                                    <div key={i} className="flex items-start gap-2 text-gray-700 text-sm">
+                                                        <Check className="w-4 h-4 text-blue-600 mt-0.5" />
                                                         <span>{item}</span>
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-wrap gap-2 pt-4 border-t border-white/10">
+                                        <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
                                             {content[activeStep].tags?.map(tag => (
-                                                <span key={tag} className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-xs text-blue-200/80 font-mono">
+                                                <span key={tag} className="px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-xs text-blue-700 font-mono">
                                                     {tag}
                                                 </span>
                                             ))}
@@ -204,12 +204,12 @@ export function SystemFlow() {
 
                             {/* Right Side: Eliminates */}
                             {!(!activeStep || (activeStep && content[activeStep]?.isCounter)) && (
-                                <div className="bg-black/40 rounded-xl p-8 border border-white/5">
-                                    <h4 className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-6">ELIMINATES THE CHAOS OF:</h4>
+                                <div className="bg-red-50 rounded-xl p-8 border border-red-100">
+                                    <h4 className="text-xs font-mono text-red-700 uppercase tracking-widest mb-6">ELIMINATES THE CHAOS OF:</h4>
                                     <div className="space-y-4">
                                         {content[activeStep!]?.eliminates?.map((item, i) => (
-                                            <div key={i} className="flex items-center gap-3 text-gray-400">
-                                                <X className="w-5 h-5 text-red-500/70" />
+                                            <div key={i} className="flex items-center gap-3 text-red-900/70">
+                                                <X className="w-5 h-5 text-red-500" />
                                                 <span>{item}</span>
                                             </div>
                                         ))}
@@ -219,8 +219,8 @@ export function SystemFlow() {
 
                             {/* Default State Graphic (Optional - just kept simple for now) */}
                             {!activeStep && (
-                                <div className="hidden md:flex items-center justify-center opacity-30">
-                                    <Layers className="w-48 h-48 text-white" />
+                                <div className="hidden md:flex items-center justify-center opacity-10">
+                                    <Layers className="w-48 h-48 text-gray-400" />
                                 </div>
                             )}
 
@@ -228,8 +228,8 @@ export function SystemFlow() {
                             {activeStep && content[activeStep].isCounter && (
                                 <div className="flex items-center justify-center">
                                     <div className="text-center space-y-2">
-                                        <div className="text-6xl font-bold text-blue-500 tabular-nums">12x</div>
-                                        <div className="text-sm text-gray-400 font-mono uppercase tracking-widest">Compounding Growth</div>
+                                        <div className="text-6xl font-bold text-blue-600 tabular-nums">12x</div>
+                                        <div className="text-sm text-gray-500 font-mono uppercase tracking-widest">Compounding Growth</div>
                                     </div>
                                 </div>
                             )}
@@ -271,10 +271,10 @@ function CounterComponent() {
                     }}
                     className="flex items-center gap-6"
                 >
-                    <div className={`w-24 text-sm font-mono ${index === currentIndex ? "text-white" : "text-gray-600"}`}>
+                    <div className={`w-24 text-sm font-mono ${index === currentIndex ? "text-gray-900 font-bold" : "text-gray-400"}`}>
                         {stage.label}
                     </div>
-                    <ArrowRight className={`w-4 h-4 ${index === currentIndex ? "text-blue-500" : "text-gray-700"}`} />
+                    <ArrowRight className={`w-4 h-4 ${index === currentIndex ? "text-blue-600" : "text-gray-300"}`} />
                     <div className={`text-xl font-bold ${stage.color}`}>
                         {stage.status}
                     </div>
